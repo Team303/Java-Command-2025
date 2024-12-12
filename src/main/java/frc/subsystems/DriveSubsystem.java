@@ -179,22 +179,30 @@ public class DriveSubsystem extends SubsystemBase {
     frontLeft = new SwerveModule(
         RobotMap.Swerve.LEFT_FRONT_DRIVE_ID,
         RobotMap.Swerve.LEFT_FRONT_STEER_ID,
+        "Drivebase",
+        "Drivebase",
         RobotMap.Swerve.LEFT_FRONT_STEER_CANCODER_ID,
         configLeftFront);
 
     frontRight = new SwerveModule(
         RobotMap.Swerve.RIGHT_FRONT_DRIVE_ID,
         RobotMap.Swerve.RIGHT_FRONT_STEER_ID,
+        "Drivebase",
+        "Drivebase",
         RobotMap.Swerve.RIGHT_FRONT_STEER_CANCODER_ID,
         configRightFront);
     backLeft = new SwerveModule(
         RobotMap.Swerve.LEFT_BACK_DRIVE_ID,
         RobotMap.Swerve.LEFT_BACK_STEER_ID,
+        "Drivebase",
+        "Drivebase",
         RobotMap.Swerve.LEFT_BACK_STEER_CANCODER_ID,
         configLeftBack);
     backRight = new SwerveModule(
         RobotMap.Swerve.RIGHT_BACK_DRIVE_ID,
         RobotMap.Swerve.RIGHT_BACK_STEER_ID,
+        "Drivebase",
+        "Drivebase",
         RobotMap.Swerve.RIGHT_BACK_STEER_CANCODER_ID,
         configRightBack);
 
