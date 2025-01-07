@@ -352,43 +352,43 @@ public class DriveSubsystem extends SubsystemBase {
       return angleDeg + 360;
   }
 
-  public ChassisSpeeds speakerAlign(ChassisSpeeds chassisSpeeds) {
+  // public ChassisSpeeds speakerAlign(ChassisSpeeds chassisSpeeds) {
 
-    double angle = normalizeAngle(calculateAngleSpeaker());
+  //   double angle = normalizeAngle(calculateAngleSpeaker());
 
-    chassisSpeeds.omegaRadiansPerSecond -= speakerAlignPid.calculate(Robot.navX.getYaw(), angle);
+  //   chassisSpeeds.omegaRadiansPerSecond -= speakerAlignPid.calculate(Robot.navX.getYaw(), angle);
 
-    return chassisSpeeds;
-  }
+  //   return chassisSpeeds;
+  // }
 
-  public ChassisSpeeds ampAlign(ChassisSpeeds chassisSpeeds) {
+  // public ChassisSpeeds ampAlign(ChassisSpeeds chassisSpeeds) {
 
-    boolean isBlue = true;
+  //   boolean isBlue = true;
 
-    var alliance = DriverStation.getAlliance();
-    if (alliance.isPresent()) {
-      isBlue = alliance.get() == DriverStation.Alliance.Blue;
-    }
+  //   var alliance = DriverStation.getAlliance();
+  //   if (alliance.isPresent()) {
+  //     isBlue = alliance.get() == DriverStation.Alliance.Blue;
+  //   }
 
-    double angle = isBlue ? -90 : 90;
+  //   double angle = isBlue ? -90 : 90;
 
-    chassisSpeeds.omegaRadiansPerSecond -= speakerAlignPid.calculate(Robot.navX.getYaw(), angle);
+  //   chassisSpeeds.omegaRadiansPerSecond -= speakerAlignPid.calculate(Robot.navX.getYaw(), angle);
 
-    return chassisSpeeds;
-  }
+  //   return chassisSpeeds;
+  // }
 
-  public void setSpeakerLock() {
-    speakerLock = true;
-  }
+  // public void setSpeakerLock() {
+  //   speakerLock = true;
+  // }
 
-  public void setAmpLock() {
-    ampLock = true;
-  }
+  // public void setAmpLock() {
+  //   ampLock = true;
+  // }
 
-  public void removeLock() {
-    ampLock = false;
-    speakerLock = false;
-  }
+  // public void removeLock() {
+  //   ampLock = false;
+  //   speakerLock = false;
+  // }
 
   public void drive(Translation2d translation, double rotation, boolean fieldOriented) {
 
@@ -612,24 +612,24 @@ public class DriveSubsystem extends SubsystemBase {
         Rotation2d.fromDegrees(isBlue ? 0 : 180)));
   }
 
-  public double calculateAngleSpeaker() {
-    boolean isBlue = true;
+  // public double calculateAngleSpeaker() {
+  //   boolean isBlue = true;
 
-    var alliance = DriverStation.getAlliance();
-    if (alliance.isPresent()) {
-      isBlue = alliance.get() == DriverStation.Alliance.Blue;
-    }
+  //   var alliance = DriverStation.getAlliance();
+  //   if (alliance.isPresent()) {
+  //     isBlue = alliance.get() == DriverStation.Alliance.Blue;
+  //   }
 
-    Pose2d robotPose = getPose();
-    Translation2d speakerPose;
+  //   Pose2d robotPose = getPose();
+  //   Translation2d speakerPose;
 
-    speakerPose = isBlue ? RobotMap.FieldConstants.centerSpeakOpenInBlue.getTranslation()
-        : RobotMap.FieldConstants.centerSpeakOpenInRed.getTranslation();
+  //   // speakerPose = isBlue ? RobotMap.FieldConstants.centerSpeakOpenInBlue.getTranslation()
+  //   //     : RobotMap.FieldConstants.centerSpeakOpenInRed.getTranslation();
 
-    return Math.atan2(speakerPose.getY() - robotPose.getY(), speakerPose.getX() - robotPose.getX()) * (180 / Math.PI)
-        * (isBlue ? -1 : 0);
+  //   // return Math.atan2(speakerPose.getY() - robotPose.getY(), speakerPose.getX() - robotPose.getX()) * (180 / Math.PI)
+  //   //     * (isBlue ? -1 : 0);
 
-  }
+  // }
 
   public void periodicReset() {
     frontLeft.periodicReset();
@@ -662,7 +662,7 @@ public class DriveSubsystem extends SubsystemBase {
     backLeftTurnOutput.setDouble(backLeft.getTurnPosition());
     frontRightTurnOutput.setDouble(frontRight.getTurnPosition());
     backRightTurnOutput.setDouble(backRight.getTurnPosition());
-    angleToSpeaker.setDouble(calculateAngleSpeaker());
+    // angleToSpeaker.setDouble(calculateAngleSpeaker());
 
     globalAngle.setDouble(Robot.navX.getAngle() % 360);
     angleVelo.setDouble(Robot.navX.getRate());
