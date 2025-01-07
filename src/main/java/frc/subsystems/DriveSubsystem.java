@@ -54,6 +54,7 @@ import frc.robot.RobotMap.PhotonvisionConstants;
 import org.photonvision.PhotonPoseEstimator.PoseStrategy;
 import java.io.IOException;
 import org.photonvision.targeting.PhotonPipelineResult;
+import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 
 /** Represents a swerve drive style drivetrain. */
 public class DriveSubsystem extends SubsystemBase {
@@ -61,12 +62,12 @@ public class DriveSubsystem extends SubsystemBase {
   private boolean speakerLock = false;
   private boolean ampLock = false;
   public static final double kMaxSpeed = 5.2; // 5.2 meters per second
-  public static final double kMaxAngularSpeed = kMaxSpeed / (Math.hypot(0.3302, 0.3302)); // radians per second
+  public static final double kMaxAngularSpeed = kMaxSpeed / (Math.hypot(0.3683, 0.3683)); // radians per second
 
-  private final Translation2d frontLeftLocation = new Translation2d(0.3302, 0.3302);
-  private final Translation2d frontRightLocation = new Translation2d(0.3302, -0.3302);
-  private final Translation2d backLeftLocation = new Translation2d(-0.3302, 0.3302);
-  private final Translation2d backRightLocation = new Translation2d(-0.3302, -0.3302);
+  private final Translation2d frontLeftLocation = new Translation2d(0.3683, 0.3683);
+  private final Translation2d frontRightLocation = new Translation2d(0.3683, -0.3683);
+  private final Translation2d backLeftLocation = new Translation2d(-0.3683, 0.3683);
+  private final Translation2d backRightLocation = new Translation2d(-0.3683, -0.3683);
 
   public final SwerveModule frontLeft;
   public final SwerveModule frontRight;
@@ -75,7 +76,7 @@ public class DriveSubsystem extends SubsystemBase {
   // private final SwerveDriveOdometry odometry;
   private final PIDController driftCorrectionPid = new PIDController(0.12, 0, 0);
   private final PIDController speakerAlignPid = new PIDController(0.5, 0, 0);
-  // private Pose2d pose = new Pose2d(0.0, 0.0, new Rotation2d());
+  private Pose2d pose = new Pose2d(0.0, 0.0, new Rotation2d());
 
   private ChassisSpeeds relativeSpeeds = new ChassisSpeeds();
 
@@ -176,25 +177,33 @@ public class DriveSubsystem extends SubsystemBase {
     configRightBack = new CANcoderConfiguration();
     configRightBack.MagnetSensor.MagnetOffset = Swerve.RIGHT_BACK_STEER_OFFSET;
 
-    frontLeft = new SwerveModule(
+    frontLeft = new SwerveModule("Left Front",
         RobotMap.Swerve.LEFT_FRONT_DRIVE_ID,
         RobotMap.Swerve.LEFT_FRONT_STEER_ID,
+        "Drivebase",
+        "Drivebase",
         RobotMap.Swerve.LEFT_FRONT_STEER_CANCODER_ID,
         configLeftFront);
 
-    frontRight = new SwerveModule(
+    frontRight = new SwerveModule("Right Front",
         RobotMap.Swerve.RIGHT_FRONT_DRIVE_ID,
         RobotMap.Swerve.RIGHT_FRONT_STEER_ID,
+        "Drivebase",
+        "Drivebase",
         RobotMap.Swerve.RIGHT_FRONT_STEER_CANCODER_ID,
         configRightFront);
-    backLeft = new SwerveModule(
+    backLeft = new SwerveModule("Left Back",
         RobotMap.Swerve.LEFT_BACK_DRIVE_ID,
         RobotMap.Swerve.LEFT_BACK_STEER_ID,
+        "Drivebase",
+        "Drivebase",
         RobotMap.Swerve.LEFT_BACK_STEER_CANCODER_ID,
         configLeftBack);
-    backRight = new SwerveModule(
+    backRight = new SwerveModule("Right Back",
         RobotMap.Swerve.RIGHT_BACK_DRIVE_ID,
         RobotMap.Swerve.RIGHT_BACK_STEER_ID,
+        "Drivebase",
+        "Drivebase",
         RobotMap.Swerve.RIGHT_BACK_STEER_CANCODER_ID,
         configRightBack);
 
@@ -207,11 +216,12 @@ public class DriveSubsystem extends SubsystemBase {
     frontRight.invertSteerMotor(true);
     backRight.invertSteerMotor(true);
     backLeft.invertSteerMotor(true);
+     
 
     frontLeft.invertDriveMotor(false);
     backLeft.invertDriveMotor(false);
     frontRight.invertDriveMotor(true);
-    backRight.invertDriveMotor(true);
+    backRight.invertDriveMotor(false);
 
     // frontLeft.getDrivePosition();
     // frontRight.getDrivePosition();
@@ -342,57 +352,55 @@ public class DriveSubsystem extends SubsystemBase {
       return angleDeg + 360;
   }
 
-  public ChassisSpeeds speakerAlign(ChassisSpeeds chassisSpeeds) {
+  // public ChassisSpeeds speakerAlign(ChassisSpeeds chassisSpeeds) {
 
-    double angle = normalizeAngle(calculateAngleSpeaker());
+  //   double angle = normalizeAngle(calculateAngleSpeaker());
 
-    chassisSpeeds.omegaRadiansPerSecond -= speakerAlignPid.calculate(Robot.navX.getYaw(), angle);
+  //   chassisSpeeds.omegaRadiansPerSecond -= speakerAlignPid.calculate(Robot.navX.getYaw(), angle);
 
-    return chassisSpeeds;
-  }
+  //   return chassisSpeeds;
+  // }
 
-  public ChassisSpeeds ampAlign(ChassisSpeeds chassisSpeeds) {
+  // public ChassisSpeeds ampAlign(ChassisSpeeds chassisSpeeds) {
 
-    boolean isBlue = true;
+  //   boolean isBlue = true;
 
-    var alliance = DriverStation.getAlliance();
-    if (alliance.isPresent()) {
-      isBlue = alliance.get() == DriverStation.Alliance.Blue;
-    }
+  //   var alliance = DriverStation.getAlliance();
+  //   if (alliance.isPresent()) {
+  //     isBlue = alliance.get() == DriverStation.Alliance.Blue;
+  //   }
 
-    double angle = isBlue ? -90 : 90;
+  //   double angle = isBlue ? -90 : 90;
 
-    chassisSpeeds.omegaRadiansPerSecond -= speakerAlignPid.calculate(Robot.navX.getYaw(), angle);
+  //   chassisSpeeds.omegaRadiansPerSecond -= speakerAlignPid.calculate(Robot.navX.getYaw(), angle);
 
-    return chassisSpeeds;
-  }
+  //   return chassisSpeeds;
+  // }
 
-  public void setSpeakerLock() {
-    speakerLock = true;
-  }
+  // public void setSpeakerLock() {
+  //   speakerLock = true;
+  // }
 
-  public void setAmpLock() {
-    ampLock = true;
-  }
+  // public void setAmpLock() {
+  //   ampLock = true;
+  // }
 
-  public void removeLock() {
-    ampLock = false;
-    speakerLock = false;
-  }
+  // public void removeLock() {
+  //   ampLock = false;
+  //   speakerLock = false;
+  // }
 
   public void drive(Translation2d translation, double rotation, boolean fieldOriented) {
 
     ChassisSpeeds chassisSpeeds = fieldOriented
         ? ChassisSpeeds.fromFieldRelativeSpeeds(translation.getX(), translation.getY(), rotation,
-            Rotation2d.fromDegrees(-Robot.navX.getAngle()))
+            Rotation2d.fromDegrees(Robot.navX.getAngle()))
         : new ChassisSpeeds(translation.getX(), translation.getY(), rotation);
 
     // chassisSpeeds = translationalDriftCorrection(chassisSpeeds);
-
     // lock onto different field elements (methods will change the anglular
     // velocity)
-
-    var swerveModuleStates = kinematics.toSwerveModuleStates(chassisSpeeds);
+    var swerveModuleStates = kinematics.toSwerveModuleStates(ChassisSpeeds.discretize(chassisSpeeds,0.02));
 
     Logger.recordOutput("Swerve Module States", swerveModuleStates);
 
@@ -574,7 +582,7 @@ public class DriveSubsystem extends SubsystemBase {
 
   }
 
-  public void resetOnlyNavX() {
+  public void  resetOnlyNavX() {
     Robot.navX.reset();
   }
 
@@ -604,24 +612,24 @@ public class DriveSubsystem extends SubsystemBase {
         Rotation2d.fromDegrees(isBlue ? 0 : 180)));
   }
 
-  public double calculateAngleSpeaker() {
-    boolean isBlue = true;
+  // public double calculateAngleSpeaker() {
+  //   boolean isBlue = true;
 
-    var alliance = DriverStation.getAlliance();
-    if (alliance.isPresent()) {
-      isBlue = alliance.get() == DriverStation.Alliance.Blue;
-    }
+  //   var alliance = DriverStation.getAlliance();
+  //   if (alliance.isPresent()) {
+  //     isBlue = alliance.get() == DriverStation.Alliance.Blue;
+  //   }
 
-    Pose2d robotPose = getPose();
-    Translation2d speakerPose;
+  //   Pose2d robotPose = getPose();
+  //   Translation2d speakerPose;
 
-    speakerPose = isBlue ? RobotMap.FieldConstants.centerSpeakOpenInBlue.getTranslation()
-        : RobotMap.FieldConstants.centerSpeakOpenInRed.getTranslation();
+  //   // speakerPose = isBlue ? RobotMap.FieldConstants.centerSpeakOpenInBlue.getTranslation()
+  //   //     : RobotMap.FieldConstants.centerSpeakOpenInRed.getTranslation();
 
-    return Math.atan2(speakerPose.getY() - robotPose.getY(), speakerPose.getX() - robotPose.getX()) * (180 / Math.PI)
-        * (isBlue ? -1 : 0);
+  //   // return Math.atan2(speakerPose.getY() - robotPose.getY(), speakerPose.getX() - robotPose.getX()) * (180 / Math.PI)
+  //   //     * (isBlue ? -1 : 0);
 
-  }
+  // }
 
   public void periodicReset() {
     frontLeft.periodicReset();
@@ -650,11 +658,11 @@ public class DriveSubsystem extends SubsystemBase {
     frontRightDriveEncoder.setDouble(frontRight.getPosition().distanceMeters);
     backRightDriveEncoder.setDouble(backRight.getPosition().distanceMeters);
 
-    frontLeftTurnOutput.setDouble(frontLeft.getMainTurnOutput());
-    backLeftTurnOutput.setDouble(backLeft.getMainTurnOutput());
-    frontRightTurnOutput.setDouble(frontRight.getMainTurnOutput());
-    backRightTurnOutput.setDouble(backRight.getMainTurnOutput());
-    angleToSpeaker.setDouble(calculateAngleSpeaker());
+    frontLeftTurnOutput.setDouble(frontLeft.getTurnPosition());
+    backLeftTurnOutput.setDouble(backLeft.getTurnPosition());
+    frontRightTurnOutput.setDouble(frontRight.getTurnPosition());
+    backRightTurnOutput.setDouble(backRight.getTurnPosition());
+    // angleToSpeaker.setDouble(calculateAngleSpeaker());
 
     globalAngle.setDouble(Robot.navX.getAngle() % 360);
     angleVelo.setDouble(Robot.navX.getRate());
@@ -662,11 +670,19 @@ public class DriveSubsystem extends SubsystemBase {
 
     Logger.recordOutput("Odometry", getPose());
     Logger.recordOutput("angular velocity", Robot.navX.getRate());
+    Logger.recordOutput("angle",Robot.navX.getAngle());
     Logger.recordOutput("Front Left Arya", frontLeft.getPosition().angle.getDegrees());
     Logger.recordOutput("Back Left Arav", backLeft.getPosition().angle.getDegrees());
     Logger.recordOutput("Front Right Alan", frontRight.getPosition().angle.getDegrees());
     Logger.recordOutput("Back Right Aritra", backRight.getPosition().angle.getDegrees());
     Logger.recordOutput("Alan is a persecuter", true);
     Logger.recordOutput("Real Swerve Module States", getModuleStates());
+    Logger.recordOutput("Left Front Setpoint", Units.rotationsToDegrees(frontLeft.getTurnMotor().getClosedLoopReference().getValueAsDouble()));
+    Logger.recordOutput("Left Front Position",Units.rotationsToDegrees(frontLeft.getTurnMotor().getPosition().getValueAsDouble() % 1.0)); //blue
+    Logger.recordOutput("Left Front PID",frontLeft.getTurnMotor().getClosedLoopIntegratedOutput().getValueAsDouble());
+    Logger.recordOutput("Left front Swerve angle Modulus",frontLeft.getState().angle.getDegrees()); //purple
+    Logger.recordOutput("Left Front Drive Voltage", frontLeft.getDriveMotor().getVelocity().getValueAsDouble());
+    Logger.recordOutput("Left Front Drive Stator current", frontLeft.getDriveMotor().getStatorCurrent().getValueAsDouble());
+
   }
 }
