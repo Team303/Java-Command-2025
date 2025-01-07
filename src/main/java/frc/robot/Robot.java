@@ -34,8 +34,8 @@ import frc.subsystems.DriveSubsystem;
 
 
 public class Robot extends LoggedRobot {
-	public static final CommandXboxController driverController = new CommandXboxController(0);
-	public static final CommandXboxController operatorController = new CommandXboxController(1);
+	// public static final CommandXboxController driverController = new CommandXboxController(0);
+	public static final CommandXboxController operatorController = new CommandXboxController(0);
 	public static final Joystick leftJoystick = new Joystick(2);
 	public static final Joystick rightJoystick = new Joystick(3);
 
@@ -90,7 +90,7 @@ public class Robot extends LoggedRobot {
 
 	@Override
 	public void disabledInit() {
-		swerve.periodicReset();
+		// swerve.periodicReset();
 	}
 
 	@Override
@@ -103,10 +103,10 @@ public class Robot extends LoggedRobot {
 		// swerve.resetOdometry(swerve.getPose())));
 		
 
-		driverController.y().onTrue(new InstantCommand(swerve::resetOnlyNavX));
-		operatorController.pov(180).onTrue(new TurnToAngle(0));
-		operatorController.pov(90).onTrue(new TurnToAngle(60));
-		operatorController.pov(270).onTrue(new TurnToAngle(-60));
+		operatorController.y().onTrue(new InstantCommand(swerve::resetOnlyNavX));
+			// operatorController.pov(180).onTrue(new TurnToAngle(0));
+			// operatorController.pov(90).onTrue(new TurnToAngle(60));
+			// operatorController.pov(270).onTrue(new TurnToAngle(-60));
 		// driverController.a().toggleOnTrue(new TurnToAngle(0).repeatedly());
 
 		//Game-specific Button Bindings go here
