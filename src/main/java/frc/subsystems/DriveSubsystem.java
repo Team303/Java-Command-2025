@@ -35,6 +35,7 @@ import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.wpilibj.DriverStation;
+
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
@@ -63,7 +64,6 @@ public class DriveSubsystem extends SubsystemBase {
   private boolean ampLock = false;
   public static final double kMaxSpeed = 5.2; // 5.2 meters per second
   public static final double kMaxAngularSpeed = kMaxSpeed / (Math.hypot(0.3683, 0.3683)); // radians per second
-
   private final Translation2d frontLeftLocation = new Translation2d(0.3683, 0.3683);
   private final Translation2d frontRightLocation = new Translation2d(0.3683, -0.3683);
   private final Translation2d backLeftLocation = new Translation2d(-0.3683, 0.3683);
