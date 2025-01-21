@@ -11,7 +11,10 @@ import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.networktables.NT4Publisher;
 import org.littletonrobotics.junction.wpilog.WPILOGReader;
 
-import com.studica.frc.AHRS;
+
+
+import com.kauailabs.navx.frc.AHRS;
+import com.pathplanner.lib.auto.NamedCommands;
 
 import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.wpilibj.Joystick;
@@ -19,12 +22,15 @@ import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.autonomous.Autonomous;
+import frc.commands.drive.AutoAlign;
 import frc.autonomous.AutonomousProgram;
+import org.littletonrobotics.junction.wpilog.WPILOGWriter;
 import frc.commands.drive.DefaultDrive;
 import frc.commands.drive.DriveWait;
 import frc.commands.drive.TurnToAngle;
@@ -34,8 +40,8 @@ import frc.subsystems.DriveSubsystem;
 
 
 public class Robot extends LoggedRobot {
-	// public static final CommandXboxController driverController = new CommandXboxController(0);
-	public static final CommandXboxController operatorController = new CommandXboxController(0);
+	public static final CommandXboxController driverController = new CommandXboxController(0);
+	public static final CommandXboxController operatorController = new CommandXboxController(1);
 	public static final Joystick leftJoystick = new Joystick(2);
 	public static final Joystick rightJoystick = new Joystick(3);
 
@@ -48,10 +54,11 @@ public class Robot extends LoggedRobot {
 
 	@Override
 	public void robotInit() {
-		photonvision = null; //new PhotonvisionModule();
+		photonvision = new PhotonvisionModule();
 		swerve = new DriveSubsystem();
 		//Subsystem initialization goes here
 		swerve.resetOdometry();
+
 
 		//NamedCommands.registerCommands() goes here
 		configureButtonBindings();
@@ -59,7 +66,7 @@ public class Robot extends LoggedRobot {
 		Logger.recordMetadata("Java-Command-2024", "robot"); // Set a metadata value
 
 		if (isReal()) {
-			// Logger.addDataReceiver(new WPILOGWriter()); // Log to a USB stick ("/U/logs")
+			//Logger.addDataReceiver(new WPILOGWriter()); // Log to a USB stick ("/U/logs")
 			Logger.addDataReceiver(new NT4Publisher()); // Publish data to NetworkTables
 			new PowerDistribution(13, ModuleType.kRev); // Enables power distribution logging
 		} else {
@@ -69,15 +76,25 @@ public class Robot extends LoggedRobot {
 			// // user)
 			//
 			Logger.setReplaySource(new WPILOGReader(logPath)); // Read replay log
-			// Logger.addDataReceiver(new WPILOGWriter(LogFileUtil.addPathSuffix(logPath,
-			// "_sim"))); // Save outputs to a
+			Logger.addDataReceiver(new WPILOGWriter(LogFileUtil.addPathSuffix(logPath,"_sim"))); // Save outputs to a
 			Logger.addDataReceiver(new NT4Publisher()); // new log
 		}
 
 		Logger.start();
 
+	
+
+
+
 		Autonomous.init();
 		AutonomousProgram.addAutosToShuffleboard();
+		NamedCommands.registerCommand("Auto Align 9", new SequentialCommandGroup(
+			new AutoAlign(9).withTimeout(6)
+		));
+
+		NamedCommands.registerCommand("Auto Align 11", new SequentialCommandGroup(
+			new AutoAlign(11).withTimeout(6)
+		));
 
 		//setDefaultCommand initialization goes here
 		swerve.setDefaultCommand(new DefaultDrive(true));
@@ -86,11 +103,12 @@ public class Robot extends LoggedRobot {
 		//Driver Camera code:
 		// CvSink cvSink = CameraServer.getVideo();
 		// CvSource outputStream = CameraServer.putVideo("Blur",1280,720);
+
 	}
 
 	@Override
 	public void disabledInit() {
-		// swerve.periodicReset();
+		swerve.periodicReset();
 	}
 
 	@Override
@@ -99,15 +117,18 @@ public class Robot extends LoggedRobot {
 	}
 
 	private void configureButtonBindings() {
-		// driverControllr.y().onTrue(Commands.runOnce(() ->
+		// driverController.y().onTrue(Commands.runOnce(() ->
 		// swerve.resetOdometry(swerve.getPose())));
 		
 
-		operatorController.y().onTrue(new InstantCommand(swerve::resetOnlyNavX));
-			// operatorController.pov(180).onTrue(new TurnToAngle(0));
-			// operatorController.pov(90).onTrue(new TurnToAngle(60));
-			// operatorController.pov(270).onTrue(new TurnToAngle(-60));
+		// driverController.y().onTrue(new InstantCommand(swerve::resetOnlyNavX));
+		driverController.y().onTrue(Commands.runOnce(() -> swerve.resetOdometry()));
+		operatorController.pov(180).onTrue(new TurnToAngle(0));
+		operatorController.pov(90).onTrue(new TurnToAngle(60));
+		operatorController.pov(270).onTrue(new TurnToAngle(-60));
 		// driverController.a().toggleOnTrue(new TurnToAngle(0).repeatedly());
+
+		driverController.a().onTrue(new AutoAlign(8));
 
 		//Game-specific Button Bindings go here
 

@@ -18,6 +18,7 @@ import edu.wpi.first.wpilibj2.command.ParallelDeadlineGroup;
 
 import static frc.autonomous.AutonomousProgram.create;
 
+import com.pathplanner.lib.auto.NamedCommands;
 import com.pathplanner.lib.commands.PathPlannerAuto;
 
 /**
@@ -55,20 +56,10 @@ public class Autonomous {
     // put this is in RobotContainer along with your subsystems.
 
     public static void init() {
-        double xPos = 1.0;
-        double yPos = Units.inchesToMeters(323.277) - Units.inchesToMeters(104.0);
-        create("SourceShootForward", () -> Autonomous.setAngleAdjustmentStart(60.46,xPos, yPos, "SourceShootForward"));
-        create("AmpShootForward", () -> Autonomous.setAngleAdjustmentStart(-56.31,xPos, yPos, "AmpShootForward"));
-        create("MiddleShootForward", () -> Autonomous.setAngleAdjustmentStart(0,xPos, yPos, "MiddleShootForward"));
-
-        create("Messsource", () -> Autonomous.setAngleAdjustmentStart(60.46,xPos, yPos, "MessSource"));
-        create("MessAmp", () -> Autonomous.setAngleAdjustmentStart(-56.31,xPos, yPos, "MessAmp"));
-        create("MessMiddle", () -> Autonomous.setAngleAdjustmentStart(0,xPos, yPos, "MessMiddle"));
-
-        create("wesuck", () -> Autonomous.setAngleAdjustmentStart(0, xPos, yPos, "wesuck"));
-
-
+        double xPos = Units.inchesToMeters(150.49);
+        double yPos = Units.inchesToMeters(100.17);
         
+        create("TEST", () -> Autonomous.setAngleAdjustmentStart(-60,xPos, yPos, "Test"));
     }
 public static SequentialCommandGroup setAngleAdjustmentStart(double angleDeg, double xPos, double yPos, String commandName) {
         Robot.navX.reset();

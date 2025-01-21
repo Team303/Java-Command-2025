@@ -1,14 +1,21 @@
 package frc.commands.drive;
 
+import org.photonvision.PhotonPoseEstimator;
+
+import edu.wpi.first.apriltag.AprilTagFieldLayout;
+import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Robot;
+import frc.robot.RobotMap.PhotonvisionConstants;
 
-public class TurnToSpeaker extends Command {
+public class AutoAlign extends Command {
 
   double angle;
   PIDController controller;
+  AprilTagFieldLayout tagLayout;
+  int tag;
 
   private double normalizeAngle(double angle) {
     angle %= 360;
@@ -20,7 +27,8 @@ public class TurnToSpeaker extends Command {
       return angle + 360;
   }
 
-  public TurnToSpeaker() {
+  public AutoAlign(int tag) {
+    this.tag = tag;
     addRequirements(Robot.swerve);
 
     controller = new PIDController(0.07, 0, 0.01);
@@ -30,7 +38,7 @@ public class TurnToSpeaker extends Command {
 
   @Override
   public void initialize() {
-    this.angle = normalizeAngle(Robot.swerve.calculateAngleSpeaker());
+    this.angle = normalizeAngle(Robot.swerve.calculateAngleFieldPosition(tag).getRotation().getAngle());
   }
 
   @Override

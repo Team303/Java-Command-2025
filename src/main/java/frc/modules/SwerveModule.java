@@ -112,7 +112,7 @@ public class SwerveModule {
     TalonFXConfiguration driveConfigs = new TalonFXConfiguration();
 
     // TODO: tune PID valued for comp so no annoying af oscillations
-    driveConfigs.Slot0.kP = 0.1; // An error of 1 rotation per second results in 2V output
+    driveConfigs.Slot0.kP = 0.2; // An error of 1 rotation per second results in 2V output
     driveConfigs.Slot0.kI = 0; // An error of 1 rotation per second increases output by 0.5V every second
     driveConfigs.Slot0.kD = 0.; // A change of 1 rotation per second squared results in 0.01 volts output
     // configs.Slot0.kV = 0.12; // Falcon 500 is a 500kV motor, 500rpm per V = 8.333
@@ -129,7 +129,7 @@ public class SwerveModule {
     turnConfigs.Feedback.FeedbackRemoteSensorID = turningCancoder.getDeviceID();
     turnConfigs.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.RemoteCANcoder;
 
-    turnConfigs.Slot0.kP=30;
+    turnConfigs.Slot0.kP=10;
     turnConfigs.Slot0.kI=0;
     turnConfigs.Slot0.kD=0;
     // turnConfigs.Slot0.kV=1;
@@ -306,7 +306,7 @@ public class SwerveModule {
     if(Math.abs(driveMotor.getVelocity().getValueAsDouble()- (desiredState.speedMetersPerSecond *2)/(2 * Math.PI * kWheelRadius * RobotMap.Swerve.SWERVE_CONVERSION_FACTOR))>0.3){
       driveMotor.setControl(voltageVelocityDriveControl
         .withVelocity(
-            (desiredState.speedMetersPerSecond *2)/ (2 * Math.PI * kWheelRadius * RobotMap.Swerve.SWERVE_CONVERSION_FACTOR))
+            (desiredState.speedMetersPerSecond*1.3)/ (2 * Math.PI * kWheelRadius * RobotMap.Swerve.SWERVE_CONVERSION_FACTOR))
         .withAcceleration(10));
     } else {
       driveMotor.setControl(new VoltageOut(0));
