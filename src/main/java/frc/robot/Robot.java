@@ -48,7 +48,6 @@ public class Robot extends LoggedRobot {
 
 	@Override
 	public void robotInit() {
-		System.out.println("Hello");
 		photonvision = null; //new PhotonvisionModule();
 		swerve = new DriveSubsystem();
 		//Subsystem initialization goes here
