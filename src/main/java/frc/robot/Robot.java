@@ -39,7 +39,7 @@ public class Robot extends LoggedRobot {
 	public static final Joystick leftJoystick = new Joystick(2);
 	public static final Joystick rightJoystick = new Joystick(3);
 
-	//HELLO
+	//HELL
 
 	public static final AHRS navX = new AHRS();
 	public static PhotonvisionModule photonvision;
