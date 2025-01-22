@@ -62,7 +62,7 @@ public class DriveSubsystem extends SubsystemBase {
 
   private boolean speakerLock = false;
   private boolean ampLock = false;
-  public static final double kMaxSpeed = 5.2; // 5.2 meters per second
+  public static final double kMaxSpeed = 5.1; // 5.2 meters per second
   public static final double kMaxAngularSpeed = kMaxSpeed / (Math.hypot(0.3683, 0.3683)); // radians per second
   private final Translation2d frontLeftLocation = new Translation2d(0.3683, 0.3683);
   private final Translation2d frontRightLocation = new Translation2d(0.3683, -0.3683);
@@ -98,7 +98,7 @@ public class DriveSubsystem extends SubsystemBase {
       .withPosition(5, 1).withSize(2, 1).getEntry();
   public static final GenericEntry frontLeftDriveEncoder = DRIVEBASE_TAB.add("front left drive enc", 0)
       .withPosition(0, 1).withSize(2, 1).getEntry();
-      
+
   public static final GenericEntry frontRightDriveEncoder = DRIVEBASE_TAB.add("front right drive enc", 0)
       .withPosition(2, 1).withSize(2, 1).getEntry();
 
