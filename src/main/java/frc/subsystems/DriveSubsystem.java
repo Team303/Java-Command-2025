@@ -98,6 +98,7 @@ public class DriveSubsystem extends SubsystemBase {
       .withPosition(5, 1).withSize(2, 1).getEntry();
   public static final GenericEntry frontLeftDriveEncoder = DRIVEBASE_TAB.add("front left drive enc", 0)
       .withPosition(0, 1).withSize(2, 1).getEntry();
+      
   public static final GenericEntry frontRightDriveEncoder = DRIVEBASE_TAB.add("front right drive enc", 0)
       .withPosition(2, 1).withSize(2, 1).getEntry();
 
