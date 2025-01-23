@@ -58,7 +58,13 @@ public class Robot extends LoggedRobot {
 		swerve = new DriveSubsystem();
 		//Subsystem initialization goes here
 		swerve.resetOdometry();
+		NamedCommands.registerCommand("Auto Align 9", new SequentialCommandGroup(
+			new AutoAlign(9).withTimeout(6)
+		));
 
+		NamedCommands.registerCommand("Auto Align 11", new SequentialCommandGroup(
+			new AutoAlign(11).withTimeout(6)
+		));
 
 		//NamedCommands.registerCommands() goes here
 		configureButtonBindings();
@@ -88,13 +94,7 @@ public class Robot extends LoggedRobot {
 
 		Autonomous.init();
 		AutonomousProgram.addAutosToShuffleboard();
-		NamedCommands.registerCommand("Auto Align 9", new SequentialCommandGroup(
-			new AutoAlign(9).withTimeout(6)
-		));
-
-		NamedCommands.registerCommand("Auto Align 11", new SequentialCommandGroup(
-			new AutoAlign(11).withTimeout(6)
-		));
+		
 
 		//setDefaultCommand initialization goes here
 		swerve.setDefaultCommand(new DefaultDrive(true));

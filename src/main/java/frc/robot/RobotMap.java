@@ -41,6 +41,9 @@ public class RobotMap {
 		public static final double PHOTON_STDDEV_SCALING_FACTOR = 1.0;
 
 		public static final double STEER_REDUCTION = (14.0 / 50.0) * (10.0 / 60.0);
+		public static final double ROBOT_MOI = 3.0246; //kg m^2
+		public static final double ROBOT_MASS = 52.965; //pounds
+
 	}
 
 	//TODO: Figure this out based off of the final design
@@ -66,6 +69,7 @@ public class RobotMap {
 		// public static final Transform3d ROBOT_TO_FRONT_RIGHT_CAMERA= new
 		// Transform3d(new Translation3d(0,-0.381,FRONT_RIGHT_CAMERA_HEIGHT_METERS),new
 		// Rotation3d(0,0.0,Math.toRadians(315.0)));
+
 
 	}
 	//Subteam-specific constants go here
