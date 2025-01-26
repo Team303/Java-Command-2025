@@ -39,7 +39,7 @@ import com.pathplanner.lib.commands.PathPlannerAuto;
  * commands will end
  *
  * ParallelDeadlineGroup
- * Will run commands in parallel if they use diffrent SubSystems
+ * Will run commands in parallel if they use diffrent    SubSystems
  * Note: Only the first command will finish the group
  */
 public class Autonomous {
@@ -59,7 +59,7 @@ public class Autonomous {
         double xPos = Units.inchesToMeters(150.49);
         double yPos = Units.inchesToMeters(100.17);
         
-        create("TEST", () -> Autonomous.setAngleAdjustmentStart(-60,xPos, yPos, "Test"));
+        create("TEST", () -> Autonomous.setAngleAdjustmentStart(0,xPos, yPos, "Test"));
     }
 public static SequentialCommandGroup setAngleAdjustmentStart(double angleDeg, double xPos, double yPos, String commandName) {
         Robot.navX.reset();

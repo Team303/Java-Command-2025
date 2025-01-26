@@ -31,16 +31,19 @@ public class RobotMap {
 		public static final int RIGHT_BACK_STEER_ID = 10;
 
 		/* Steer Motor Offset */
-		public static final double LEFT_BACK_STEER_OFFSET = (-2.2) / 360;
-		public static final double RIGHT_BACK_STEER_OFFSET = (35.4) / 360;
-		public static final double LEFT_FRONT_STEER_OFFSET = (174.99) / 360;
-		public static final double RIGHT_FRONT_STEER_OFFSET = (148.096) / 360;
+		public static final double LEFT_BACK_STEER_OFFSET = (-2.2+8.8) / 360;
+		public static final double RIGHT_BACK_STEER_OFFSET = (35.4-9.2) / 360;
+		public static final double LEFT_FRONT_STEER_OFFSET = (174.99+2.3) / 360;
+		public static final double RIGHT_FRONT_STEER_OFFSET = (148.096-166.1) / 360;
 
 		public static final double SWERVE_CONVERSION_FACTOR = (14.0 / 50.0) * (28.0 / 16.0) * (15.0 / 45.0);
 
 		public static final double PHOTON_STDDEV_SCALING_FACTOR = 1.0;
 
 		public static final double STEER_REDUCTION = (14.0 / 50.0) * (10.0 / 60.0);
+		public static final double ROBOT_MOI = 3.0246; //kg m^2
+		public static final double ROBOT_MASS = 52.965; //pounds
+
 	}
 
 	//TODO: Figure this out based off of the final design
@@ -57,15 +60,16 @@ public class RobotMap {
 		// Transform3d(new Translation3d(0.381, 0, FRONT_LEFT_CAMERA_HEIGHT_METERS),new
 		// Rotation3d(0.0,0.0,Math.toRadians(45.0)));
 		public static final Transform3d ROBOT_TO_FRONT_LEFT_CAMERA = new Transform3d(
-				new Translation3d( Units.inchesToMeters(20),Units.inchesToMeters(-45),
+				new Translation3d( Units.inchesToMeters(20),Units.inchesToMeters(-29),
 						FRONT_LEFT_CAMERA_HEIGHT_METERS),
-				new Rotation3d(180, Math.toRadians(18.6), Math.toRadians(21)));
+				new Rotation3d(180, Math.toRadians(18.6), Math.toRadians(25)));
 		public static final Transform3d ROBOT_TO_FRONT_RIGHT_CAMERA = new Transform3d(
-				new Translation3d(Units.inchesToMeters(15),-Units.inchesToMeters(-10), FRONT_RIGHT_CAMERA_HEIGHT_METERS),
-				new Rotation3d(Math.toRadians(180), Math.toRadians(18.6), Math.toRadians(-21)));
+				new Translation3d(Units.inchesToMeters(15),Units.inchesToMeters(7), FRONT_RIGHT_CAMERA_HEIGHT_METERS),
+				new Rotation3d(Math.toRadians(180), Math.toRadians(18.6), Math.toRadians(-2)));
 		// public static final Transform3d ROBOT_TO_FRONT_RIGHT_CAMERA= new
 		// Transform3d(new Translation3d(0,-0.381,FRONT_RIGHT_CAMERA_HEIGHT_METERS),new
 		// Rotation3d(0,0.0,Math.toRadians(315.0)));
+
 
 	}
 	//Subteam-specific constants go here

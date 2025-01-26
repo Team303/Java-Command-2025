@@ -129,7 +129,7 @@ public class SwerveModule {
     turnConfigs.Feedback.FeedbackRemoteSensorID = turningCancoder.getDeviceID();
     turnConfigs.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.RemoteCANcoder;
 
-    turnConfigs.Slot0.kP=10;
+    turnConfigs.Slot0.kP=20;
     turnConfigs.Slot0.kI=0;
     turnConfigs.Slot0.kD=0;
     // turnConfigs.Slot0.kV=1;
@@ -153,7 +153,7 @@ public class SwerveModule {
     var limitConfigs = new CurrentLimitsConfigs();
 
     // enable stator current limit
-    limitConfigs.StatorCurrentLimit = 130;
+    limitConfigs.StatorCurrentLimit = 30;
     limitConfigs.StatorCurrentLimitEnable = true;
 
     limitConfigs.SupplyCurrentLimit = 50;

@@ -58,7 +58,13 @@ public class Robot extends LoggedRobot {
 		swerve = new DriveSubsystem();
 		//Subsystem initialization goes here
 		swerve.resetOdometry();
+		NamedCommands.registerCommand("Auto Align 9", new SequentialCommandGroup(
+			new AutoAlign(9).withTimeout(6)
+		));
 
+		NamedCommands.registerCommand("Auto Align 11", new SequentialCommandGroup(
+			new AutoAlign(11).withTimeout(6)
+		));
 
 		//NamedCommands.registerCommands() goes here
 		configureButtonBindings();
@@ -88,13 +94,7 @@ public class Robot extends LoggedRobot {
 
 		Autonomous.init();
 		AutonomousProgram.addAutosToShuffleboard();
-		NamedCommands.registerCommand("Auto Align 9", new SequentialCommandGroup(
-			new AutoAlign(9).withTimeout(6)
-		));
-
-		NamedCommands.registerCommand("Auto Align 11", new SequentialCommandGroup(
-			new AutoAlign(11).withTimeout(6)
-		));
+		
 
 		//setDefaultCommand initialization goes here
 		swerve.setDefaultCommand(new DefaultDrive(true));
@@ -128,7 +128,11 @@ public class Robot extends LoggedRobot {
 		operatorController.pov(270).onTrue(new TurnToAngle(-60));
 		// driverController.a().toggleOnTrue(new TurnToAngle(0).repeatedly());
 
-		driverController.a().onTrue(new AutoAlign(8));
+		driverController.a().onTrue(new AutoAlign(11));
+		driverController.b().onTrue(new AutoAlign(10));
+
+		driverController.x().onTrue(new AutoAlign(9));
+
 
 		//Game-specific Button Bindings go here
 
