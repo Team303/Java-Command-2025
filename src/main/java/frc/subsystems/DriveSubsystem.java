@@ -199,6 +199,12 @@ public class DriveSubsystem extends SubsystemBase {
         "Drivebase",
         "Drivebase",
         RobotMap.Swerve.LEFT_FRONT_STEER_CANCODER_ID,
+        0.2,
+        0.0,
+        0.0,
+        50,
+        0.0,
+        0.0,
         configLeftFront);
 
     frontRight = new SwerveModule("Right Front",
@@ -207,6 +213,12 @@ public class DriveSubsystem extends SubsystemBase {
         "Drivebase",
         "Drivebase",
         RobotMap.Swerve.RIGHT_FRONT_STEER_CANCODER_ID,
+        0.2,
+        0.0,
+        0.0,
+        50,
+        0.0,
+        0.0,
         configRightFront);
     backLeft = new SwerveModule("Left Back",
         RobotMap.Swerve.LEFT_BACK_DRIVE_ID,
@@ -214,6 +226,12 @@ public class DriveSubsystem extends SubsystemBase {
         "Drivebase",
         "Drivebase",
         RobotMap.Swerve.LEFT_BACK_STEER_CANCODER_ID,
+        0.2,
+        0.0,
+        0.0,
+        50,
+        0.0,
+        0.0,
         configLeftBack);
     backRight = new SwerveModule("Right Back",
         RobotMap.Swerve.RIGHT_BACK_DRIVE_ID,
@@ -221,6 +239,12 @@ public class DriveSubsystem extends SubsystemBase {
         "Drivebase",
         "Drivebase",
         RobotMap.Swerve.RIGHT_BACK_STEER_CANCODER_ID,
+        0.2,
+        0.0,
+        0.0,
+        50,
+        0.0,
+        0.0,
         configRightBack);
 
     // frontLeft.getTurningEncoder().configMagnetOffset(RobotMap.Swerve.LEFT_FRONT_STEER_OFFSET);
@@ -234,7 +258,7 @@ public class DriveSubsystem extends SubsystemBase {
     backLeft.invertSteerMotor(true);
 
     frontLeft.invertDriveMotor(false);
-    backLeft.invertDriveMotor(false);
+    backLeft.invertDriveMotor(true);
     frontRight.invertDriveMotor(false);
     backRight.invertDriveMotor(true);
 
@@ -442,6 +466,10 @@ public class DriveSubsystem extends SubsystemBase {
     return new PathPlannerAuto(autoName);
   }
 
+  public Command followPathOnTheFly(PathPlannerPath path) {
+    return AutoBuilder.followPath(path);
+  }
+
   // /** Updates the field relative position of the robot. */
   public void updateOdometry() {
     Optional<EstimatedRobotPose> resultFrontLeft = getEstimatedGlobalPose(poseEstimator.getEstimatedPosition(),
@@ -454,7 +482,7 @@ public class DriveSubsystem extends SubsystemBase {
     // getEstimatedGlobalPoseRight(poseEstimator.getEstimatedPosition());
     // Optional<EstimatedRobotPose> resultLeft =
     // getEstimatedGlobalPoseLeft(poseEstimator.getEstimatedPosition());
-    int cameraCount=0;
+    // int cameraCount=0;
     if (resultFrontLeft.isPresent()) {
       EstimatedRobotPose visionPoseEstimate = resultFrontLeft.get();
       Vector<N3> stddevs = getEstimationStdDevs(visionPoseEstimate.targetsUsed);
@@ -466,7 +494,7 @@ public class DriveSubsystem extends SubsystemBase {
       poseEstimator.addVisionMeasurement(visionPoseEstimate.estimatedPose.toPose2d(),
           visionPoseEstimate.timestampSeconds,
           stddevs);
-      cameraCount++;
+      // cameraCount++;
     }
     // if (resultFrontRight.isPresent()) {
     // EstimatedRobotPose visionPoseEstimate = resultRight.get();
@@ -474,8 +502,8 @@ public class DriveSubsystem extends SubsystemBase {
     // poseEstimator.addVisionMeasurement(visionPoseEstimate.estimatedPose.toPose2d(),
     // visionPoseEstimate.timestampSeconds);
     // }
-    Logger.recordOutput("Camera",cameraCount);
-    if(!(DriverStation.isAutonomous())){
+    // Logger.recordOutput("Camera",cameraCount);
+    // if(!(DriverStation.isAutonomous())){
     if (resultFrontRight.isPresent()) {
       EstimatedRobotPose visionPoseEstimate = resultFrontRight.get();
       Vector<N3> stddevs = getEstimationStdDevs(visionPoseEstimate.targetsUsed);
@@ -488,7 +516,7 @@ public class DriveSubsystem extends SubsystemBase {
           visionPoseEstimate.timestampSeconds,
           stddevs);
     }
-    }
+    // }
     // if (resultLeft.isPresent()) {
 
     // EstimatedRobotPose visionPoseEstimate = resultLeft.get();
@@ -715,7 +743,7 @@ public class DriveSubsystem extends SubsystemBase {
 
   @Override
   public void periodic() {
-    periodicReset();
+    // periodicReset();
 
     // FRONT_LEFT_ENC.setDouble(frontLeft.turningEncoder.getAbsolutePosition().refresh().getValue()
     // * 360);

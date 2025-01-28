@@ -36,6 +36,7 @@ public class SwerveModule {
 
   private double mainTurnOutput;
 
+
   public double getMainDriveOutput() {
     return mainDriveOutput;
   }
@@ -52,7 +53,7 @@ public class SwerveModule {
 
   private final TalonFX turningMotor;
 
-  private final VelocityVoltage voltageVelocityDriveControl = new VelocityVoltage(0).withAcceleration(10).withEnableFOC(true).withFeedForward(0).withSlot(0).withOverrideBrakeDurNeutral(true);
+  private final VelocityVoltage voltageVelocityDriveControl = new VelocityVoltage(0).withEnableFOC(true).withFeedForward(0).withSlot(0).withOverrideBrakeDurNeutral(true);
   private final PositionVoltage positionAngleControl = new PositionVoltage(0).withVelocity(10).withEnableFOC(true).withFeedForward(0).withSlot(0).withOverrideBrakeDurNeutral(true);
 
 
@@ -85,6 +86,12 @@ public class SwerveModule {
       String driveCanBus,
       String turnCanBus,
       int turningEncoderChannelA,
+      double drive_kP,
+      double drive_kI,
+      double drive_kD,
+      double turn_kP,
+      double turn_kI,
+      double turn_kD,
       CANcoderConfiguration config) {
 
     name = position;
@@ -112,9 +119,9 @@ public class SwerveModule {
     TalonFXConfiguration driveConfigs = new TalonFXConfiguration();
 
     // TODO: tune PID valued for comp so no annoying af oscillations
-    driveConfigs.Slot0.kP = 0.2; // An error of 1 rotation per second results in 2V output
-    driveConfigs.Slot0.kI = 0; // An error of 1 rotation per second increases output by 0.5V every second
-    driveConfigs.Slot0.kD = 0.; // A change of 1 rotation per second squared results in 0.01 volts output
+    driveConfigs.Slot0.kP = drive_kP; // An error of 1 rotation per second results in 2V output
+    driveConfigs.Slot0.kI = drive_kI; // An error of 1 rotation per second increases output by 0.5V every second
+    driveConfigs.Slot0.kD = drive_kD; // A change of 1 rotation per second squared results in 0.01 volts output
     // configs.Slot0.kV = 0.12; // Falcon 500 is a 500kV motor, 500rpm per V = 8.333
     // rps per V, 1/8.33 = 0.12
     // volts / Rotation per second
@@ -129,9 +136,9 @@ public class SwerveModule {
     turnConfigs.Feedback.FeedbackRemoteSensorID = turningCancoder.getDeviceID();
     turnConfigs.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.RemoteCANcoder;
 
-    turnConfigs.Slot0.kP=20;
-    turnConfigs.Slot0.kI=0;
-    turnConfigs.Slot0.kD=0;
+    turnConfigs.Slot0.kP=turn_kP;
+    turnConfigs.Slot0.kI=turn_kI;
+    turnConfigs.Slot0.kD=turn_kD;
     // turnConfigs.Slot0.kV=1;
 
     //25
@@ -153,7 +160,7 @@ public class SwerveModule {
     var limitConfigs = new CurrentLimitsConfigs();
 
     // enable stator current limit
-    limitConfigs.StatorCurrentLimit = 30;
+    limitConfigs.StatorCurrentLimit = 60;
     limitConfigs.StatorCurrentLimitEnable = true;
 
     limitConfigs.SupplyCurrentLimit = 50;
@@ -172,7 +179,7 @@ public class SwerveModule {
   public void invertDriveMotor(boolean inversion) {
     driveMotor.setInverted(inversion);
   }
-
+ 
   public double getDrivePosition() {
     return driveMotor.getPosition().refresh().getValueAsDouble() * 2 * Math.PI * kWheelRadius
         * RobotMap.Swerve.SWERVE_CONVERSION_FACTOR;
@@ -249,7 +256,7 @@ public class SwerveModule {
     return angle;
   }
 
-  final double ENCODER_RESET_MAX_ANGULAR_VELOCITY = Math.toRadians(2);
+  final double ENCODER_RESET_MAX_ANGULAR_VELOCITY = Units.degreesToRotations(2);
   final double ENCODER_RESET_ITERATIONS = 200;
   double resetIteration = 0;
 
@@ -268,7 +275,7 @@ public class SwerveModule {
 
         // removed normalize angle so it is -Math.PI to Math.PI
         double absoluteAngle = turningCancoder.getAbsolutePosition().refresh().getValueAsDouble() % 1.0;
-        turningMotor.setPosition(absoluteAngle);
+        turningCancoder.setPosition(absoluteAngle);
       }
     } else {
       resetIteration = 0;
@@ -296,7 +303,6 @@ public class SwerveModule {
    * @param desiredState Desired state with speed and angle.
    */
   public void setDesiredState(SwerveModuleState desiredState) {
-
     // Optimize the reference state to avoid spinning further than 90 degrees
     desiredState.optimize(Rotation2d.fromRadians(normalizeAngle2(Units.rotationsToRadians(turningMotor.getPosition().refresh().getValueAsDouble()))));
 
@@ -306,13 +312,12 @@ public class SwerveModule {
     if(Math.abs(driveMotor.getVelocity().getValueAsDouble()- (desiredState.speedMetersPerSecond *2)/(2 * Math.PI * kWheelRadius * RobotMap.Swerve.SWERVE_CONVERSION_FACTOR))>0.3){
       driveMotor.setControl(voltageVelocityDriveControl
         .withVelocity(
-            (desiredState.speedMetersPerSecond*1.3)/ (2 * Math.PI * kWheelRadius * RobotMap.Swerve.SWERVE_CONVERSION_FACTOR))
-        .withAcceleration(10));
+            (desiredState.speedMetersPerSecond*1.3)/ (2 * Math.PI * kWheelRadius * RobotMap.Swerve.SWERVE_CONVERSION_FACTOR)));
     } else {
       driveMotor.setControl(new VoltageOut(0));
  
     }
-    if(Math.abs(Units.radiansToRotations(turningMotor.getPosition().getValueAsDouble())-Units.radiansToRotations(normalizeAngle2(desiredState.angle.getRadians())))>5.0/360){
+    if(Math.abs(turningMotor.getPosition().getValueAsDouble()-Units.radiansToRotations(normalizeAngle2(desiredState.angle.getRadians())))>0.5/360){
       turningMotor.setControl(positionAngleControl.withPosition(Units.radiansToRotations(normalizeAngle2(desiredState.angle.getRadians()))).withVelocity(40*Units.radiansToRotations(DriveSubsystem.kMaxAngularSpeed)).withUpdateFreqHz(1000));
     } else {
       turningMotor.setControl(new VoltageOut(0));

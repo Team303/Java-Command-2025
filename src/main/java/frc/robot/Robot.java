@@ -108,7 +108,7 @@ public class Robot extends LoggedRobot {
 
 	@Override
 	public void disabledInit() {
-		swerve.periodicReset();
+		// swerve.periodicReset();
 	}
 
 	@Override
@@ -128,11 +128,7 @@ public class Robot extends LoggedRobot {
 		operatorController.pov(270).onTrue(new TurnToAngle(-60));
 		// driverController.a().toggleOnTrue(new TurnToAngle(0).repeatedly());
 
-		driverController.a().onTrue(new AutoAlign(11));
-		driverController.b().onTrue(new AutoAlign(10));
-
-		driverController.x().onTrue(new AutoAlign(9));
-
+		driverController.a().onTrue(new AutoAlign(8));
 
 		//Game-specific Button Bindings go here
 

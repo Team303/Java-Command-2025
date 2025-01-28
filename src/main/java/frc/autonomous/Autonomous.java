@@ -59,7 +59,7 @@ public class Autonomous {
         double xPos = Units.inchesToMeters(150.49);
         double yPos = Units.inchesToMeters(100.17);
         
-        create("TEST", () -> Autonomous.setAngleAdjustmentStart(0,xPos, yPos, "Test"));
+        create("TEST", () -> new PathPlannerAuto("Test"));
     }
 public static SequentialCommandGroup setAngleAdjustmentStart(double angleDeg, double xPos, double yPos, String commandName) {
         Robot.navX.reset();
