@@ -15,6 +15,7 @@ import org.littletonrobotics.junction.wpilog.WPILOGReader;
 
 import com.kauailabs.navx.frc.AHRS;
 import com.pathplanner.lib.auto.NamedCommands;
+import com.pathplanner.lib.pathfinding.Pathfinding;
 
 import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.wpilibj.Joystick;
@@ -35,6 +36,7 @@ import frc.commands.drive.DefaultDrive;
 import frc.commands.drive.DriveWait;
 import frc.commands.drive.TurnToAngle;
 import frc.modules.PhotonvisionModule;
+import frc.robot.util.LocalADStarAK;
 // import frc.commands.drive.TurnToSpeaker;
 import frc.subsystems.DriveSubsystem;
 
@@ -91,11 +93,9 @@ public class Robot extends LoggedRobot {
 	
 
 
-
 		Autonomous.init();
 		AutonomousProgram.addAutosToShuffleboard();
-		
-
+		Pathfinding.setPathfinder(new LocalADStarAK());
 		//setDefaultCommand initialization goes here
 		swerve.setDefaultCommand(new DefaultDrive(true));
 		swerve.resetOnlyNavX();
@@ -128,7 +128,9 @@ public class Robot extends LoggedRobot {
 		operatorController.pov(270).onTrue(new TurnToAngle(-60));
 		// driverController.a().toggleOnTrue(new TurnToAngle(0).repeatedly());
 
-		driverController.a().onTrue(new AutoAlign(8));
+		driverController.a().onTrue(new AutoAlign(9));
+		driverController.x().onTrue(swerve.followPathfinding(11));
+		driverController.b().onTrue(swerve.followPathfinding(9));
 
 		//Game-specific Button Bindings go here
 

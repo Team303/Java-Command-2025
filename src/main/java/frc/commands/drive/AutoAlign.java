@@ -50,7 +50,7 @@ public class AutoAlign extends Command {
 
   @Override
   public void initialize() {
-    this.angle = Robot.swerve.calculateAngleFieldPosition(tag);
+    this.angle = Robot.swerve.calculateFieldPosition(tag).getRotation().getDegrees();
   }
 
   @Override

@@ -4,6 +4,7 @@
 
 package frc.subsystems;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
 
@@ -11,24 +12,34 @@ import org.littletonrobotics.junction.Logger;
 import org.photonvision.EstimatedRobotPose;
 import org.photonvision.PhotonCamera;
 import org.photonvision.PhotonPoseEstimator;
+import org.photonvision.PhotonPoseEstimator.PoseStrategy;
+import org.photonvision.targeting.PhotonPipelineResult;
 import org.photonvision.targeting.PhotonTrackedTarget;
 
 import com.ctre.phoenix6.configs.CANcoderConfiguration;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.commands.PathPlannerAuto;
+import com.pathplanner.lib.config.ModuleConfig;
+import com.pathplanner.lib.config.PIDConstants;
+import com.pathplanner.lib.config.RobotConfig;
 import com.pathplanner.lib.controllers.PPHolonomicDriveController;
+import com.pathplanner.lib.path.GoalEndState;
+import com.pathplanner.lib.path.PathConstraints;
 import com.pathplanner.lib.path.PathPlannerPath;
+import com.pathplanner.lib.path.Waypoint;
 // import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
 // import com.pathplanner.lib.util.PIDConstants;
 // import com.pathplanner.lib.util.ReplanningConfig;
 import com.pathplanner.lib.util.DriveFeedforwards;
 
+import edu.wpi.first.apriltag.AprilTagFieldLayout;
+import edu.wpi.first.apriltag.AprilTagFieldLayout.OriginPosition;
+import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.Vector;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
@@ -39,29 +50,20 @@ import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.networktables.GenericEntry;
-import edu.wpi.first.wpilibj.*;
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj2.command.Command;
-
-import com.pathplanner.lib.config.ModuleConfig;
-import com.pathplanner.lib.config.PIDConstants;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.modules.PhotonvisionModule.CameraName;
 import frc.modules.SwerveModule;
 import frc.robot.Robot;
 import frc.robot.RobotMap;
-import frc.robot.RobotMap.Swerve;
-import edu.wpi.first.apriltag.AprilTagFieldLayout;
-import edu.wpi.first.wpilibj.DriverStation.Alliance;
-import edu.wpi.first.apriltag.AprilTagFields;
-import edu.wpi.first.apriltag.AprilTagFieldLayout.OriginPosition;
 import frc.robot.RobotMap.PhotonvisionConstants;
-import org.photonvision.PhotonPoseEstimator.PoseStrategy;
-import java.io.IOException;
-import org.photonvision.targeting.PhotonPipelineResult;
-import com.pathplanner.lib.config.RobotConfig;
+import frc.robot.RobotMap.Swerve;
 
 /** Represents a swerve drive style drivetrain. */
 public class DriveSubsystem extends SubsystemBase {
@@ -88,7 +90,6 @@ public class DriveSubsystem extends SubsystemBase {
   private final PIDController xController = new PIDController(10.0, 0.0, 0.0);
   private final PIDController yController = new PIDController(10.0, 0.0, 0.0);
   private final PIDController headingController = new PIDController(7.5, 0.0, 0.0);
-
 
   private ChassisSpeeds relativeSpeeds = new ChassisSpeeds();
 
@@ -317,8 +318,9 @@ public class DriveSubsystem extends SubsystemBase {
         new PPHolonomicDriveController(new PIDConstants(9, 0, 0.5), new PIDConstants(8, 0, 0)), new RobotConfig(
             Units.lbsToKilograms(RobotMap.Swerve.ROBOT_MASS),
             RobotMap.Swerve.ROBOT_MOI,
-            new ModuleConfig(Units.inchesToMeters(2), kMaxSpeed*3, kMaxAngularSpeed,
-                new DCMotor(12, 7.09, 366, 2, Units.rotationsPerMinuteToRadiansPerSecond(6000), 1), 130, 1), frontLeftLocation, frontRightLocation, backLeftLocation, backRightLocation ),  
+            new ModuleConfig(Units.inchesToMeters(2), kMaxSpeed * 3, kMaxAngularSpeed,
+                new DCMotor(12, 7.09, 366, 2, Units.rotationsPerMinuteToRadiansPerSecond(6000), 1), 130, 1),
+            frontLeftLocation, frontRightLocation, backLeftLocation, backRightLocation),
         () -> {
           // Boolean supplier that controls when the path will be mirrored for the red
           // alliance
@@ -336,18 +338,19 @@ public class DriveSubsystem extends SubsystemBase {
   }
 
   // public void followTrajectory(SwerveSample sample) {
-  //       // Get the current pose of the robot
-  //       Pose2d pose = getPose();
+  // // Get the current pose of the robot
+  // Pose2d pose = getPose();
 
-  //       // Generate the next speeds for the robot
-  //       ChassisSpeeds speeds = new ChassisSpeeds(
-  //           sample.vx + xController.calculate(pose.getX(), sample.x),
-  //           sample.vy + yController.calculate(pose.getY(), sample.y),
-  //           sample.omega + headingController.calculate(pose.getRotation().getRadians(), sample.heading)
-  //       );
+  // // Generate the next speeds for the robot
+  // ChassisSpeeds speeds = new ChassisSpeeds(
+  // sample.vx + xController.calculate(pose.getX(), sample.x),
+  // sample.vy + yController.calculate(pose.getY(), sample.y),
+  // sample.omega + headingController.calculate(pose.getRotation().getRadians(),
+  // sample.heading)
+  // );
 
-  //       // Apply the generated speeds
-  //       drive();
+  // // Apply the generated speeds
+  // drive();
   // }
 
   /**
@@ -443,7 +446,6 @@ public class DriveSubsystem extends SubsystemBase {
     // lock onto different field elements (methods will change the anglular
     // velocity)
 
-
     var swerveModuleStates = kinematics.toSwerveModuleStates(ChassisSpeeds.discretize(chassisSpeeds, 0.02));
 
     Logger.recordOutput("Swerve Module States", swerveModuleStates);
@@ -466,8 +468,34 @@ public class DriveSubsystem extends SubsystemBase {
     return new PathPlannerAuto(autoName);
   }
 
-  public Command followPathOnTheFly(PathPlannerPath path) {
+  public Command followPathOnTheFly(int tag) {
+    PathConstraints constraints = new PathConstraints(3.0, 3.0, 2 * Math.PI, 4 * Math.PI); // The constraints for this
+                                                                                           // path.
+    List<Waypoint> waypoints = PathPlannerPath
+        .waypointsFromPoses(Robot.swerve.getPose(),new Pose2d(calculateFieldPosition(tag).getTranslation(),
+            Rotation2d.fromDegrees(Robot.swerve.calculateFieldPosition(tag).getRotation().getDegrees()+60)));
+    PathPlannerPath path = new PathPlannerPath(
+        waypoints,
+        constraints,
+        null, // The ideal starting state, this is only relevant for pre-planned paths, so can
+              // be null for on-the-fly paths.
+        new GoalEndState(0.0, Rotation2d.fromDegrees(Robot.swerve.calculateFieldPosition(tag).getRotation().getDegrees()+60)) // Goal end state.
+                                                                                                     // You can set a
+                                                                                                     // holonomic
+                                                                                                     // rotation here.
+                                                                                                     // If using a
+                                                                                                     // differential
+                                                                                                     // drivetrain, the
+                                                                                                     // rotation will
+                                                                                                     // have no effect.
+    );
+    path.preventFlipping = true;
     return AutoBuilder.followPath(path);
+  }
+  public Command followPathfinding(int tag) {
+    Pose2d targetPose = new Pose2d(calculateFieldPosition(tag).getTranslation(),Rotation2d.fromDegrees(Robot.swerve.calculateFieldPosition(tag).getRotation().getDegrees()+60));
+    PathConstraints constraints = new PathConstraints(3.0, 3.0, 2 * Math.PI, 4 * Math.PI); // The constraints for this
+    return AutoBuilder.pathfindToPose(targetPose,constraints,0.0);
   }
 
   // /** Updates the field relative position of the robot. */
@@ -690,29 +718,35 @@ public class DriveSubsystem extends SubsystemBase {
         Rotation2d.fromDegrees(isBlue ? 0 : 180)));
   }
 
-  public double calculateAngleFieldPosition(int tag) {
+  public Pose2d calculateFieldPosition(int tag) {
 
-    switch(tag) {
-      //TODO: Fix angles to be relative to real starting position
-      //TODO: Add support for blue alliance
-      case 8: 
-        return 0.0;
-      case 9:
+    switch (tag) {
+      // TODO: Fix angles to be relative to real starting position
+      // TODO: Add support for blue alliance
       case 1:
-        return 60.0;
-      case 10:
-        return 120.0;
-      case 11:
+      return new Pose2d(1,1,Rotation2d.fromDegrees(60.0));
       case 2:
-        return 180.0;
-      case 6:
-        return 240.0;
-      case 7:
-        return 300.0;
+      return new Pose2d(1,1,Rotation2d.fromDegrees(180.0));
       case 3:
-        return 210.0;
+      return new Pose2d(1,1,Rotation2d.fromDegrees(210.0));
+      case 4:
+      return new Pose2d(1,1,Rotation2d.fromDegrees(300.0));
+      case 5:
+      return new Pose2d(1,1,Rotation2d.fromDegrees(300.0));
+      case 6:
+      return new Pose2d(1,1,Rotation2d.fromDegrees(240.0));
+      case 7:
+      return new Pose2d(2.9,4.04,Rotation2d.fromDegrees(300.0));
+      case 8:
+        return new Pose2d(3.82,2.54,Rotation2d.fromDegrees(0.0));
+      case 9:
+      return new Pose2d(5.29,2.62,Rotation2d.fromDegrees(60.0));
+      case 10:
+      return new Pose2d(5.95,4.12,Rotation2d.fromDegrees(120.0));
+      case 11:
+      return new Pose2d(5.33,5.33,Rotation2d.fromDegrees(180.0));
       default:
-        return 0.0;
+        return new Pose2d();
     }
     // boolean isBlue = true;
 
