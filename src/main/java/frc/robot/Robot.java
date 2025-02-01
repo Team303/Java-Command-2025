@@ -130,6 +130,7 @@ public class Robot extends LoggedRobot {
 		operatorController.pov(90).onTrue(Commands.runOnce(() -> operatorControl.moveRight()));
 		operatorController.pov(180).onTrue(Commands.runOnce(() -> operatorControl.moveDown()));
 		operatorController.pov(270).onTrue(Commands.runOnce(() -> operatorControl.moveLeft()));
+		operatorController.a().onTrue(Commands.runOnce(()-> operatorControl.queuePlacement()));
 		// driverController.a().toggleOnTrue(new TurnToAngle(0).repeatedly());
 
 		// driverController.a().onTrue(new AutoAlign(8));

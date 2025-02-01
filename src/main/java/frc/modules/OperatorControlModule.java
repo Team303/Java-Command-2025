@@ -43,11 +43,11 @@ public class OperatorControlModule extends SubsystemBase {
 
     // public static boolean coopertitionBonusAchieved;
 
-    // public boolean queueManualOverride = false;
+    public boolean queueManualOverride = false;
     // public boolean suggestManualOverride = false;
 
     public Point hoverValue = new Point(0, 0);
-    public Point queuedValue = new Point(-1,-1);
+    public Point queuedValue;
 
     public Timer timer = new Timer();
     // private final Alert lol = new Alert("Operator Terminal", "wow it works",AlertType.kError);
@@ -215,30 +215,31 @@ public class OperatorControlModule extends SubsystemBase {
     //     }
     // }
 
-    // public void queuePlacement() {
-    //     if (nodeSuperStateValues[hoverValue.x][hoverValue.y] == NodeSuperState.QUEUED.value) {
-    //         nodeSuperStateValues[hoverValue.x][hoverValue.y] = NodeSuperState.HOVER.value;
-    //         queueManualOverride = false;
-    //         queuedValue = null;
-    //     } else {
-    //         if (nodeStateValues[hoverValue.x][hoverValue.y] != NodeState.NONE.value) {
-    //             logQueueOnFilledNode.set(true);
-    //             return;
-    //         }
-    //         logQueueOnFilledNode.set(false);
-    //         if (queuedValue == null) {
-    //             nodeSuperStateValues[hoverValue.x][hoverValue.y] = NodeSuperState.QUEUED.value;
-    //             queueManualOverride = true;
-    //             queuedValue = new Point(hoverValue);
-    //         } else {
-    //             nodeSuperStateValues[queuedValue.x][queuedValue.y] = NodeSuperState.NONE.value;
-    //             queueManualOverride = true;
-    //             nodeSuperStateValues[hoverValue.x][hoverValue.y] = NodeSuperState.QUEUED.value;
-    //             queuedValue.x = hoverValue.x;
-    //             queuedValue.y = hoverValue.y;
-    //         }
-    //     }
-    // }
+    public void queuePlacement() {
+        if (hoverValue.equals(queuedValue)) {
+            System.out.println("bruh");
+            nodeSuperStateValues[hoverValue.x][hoverValue.y] = NodeSuperState.HOVER.value;
+            queueManualOverride = false;
+            queuedValue = null;
+        } else {
+            if (nodeStateValues[hoverValue.x][hoverValue.y] != NodeState.NONE.value) {
+                logQueueOnFilledNode.set(true);
+                return;
+            }
+            logQueueOnFilledNode.set(false);
+            if (queuedValue == null) {
+                nodeSuperStateValues[hoverValue.x][hoverValue.y] = NodeSuperState.QUEUED.value;
+                queueManualOverride = true;
+                queuedValue = new Point(hoverValue);
+            } else {
+                nodeSuperStateValues[queuedValue.x][queuedValue.y] = NodeSuperState.NONE.value;
+                queueManualOverride = true;
+                nodeSuperStateValues[hoverValue.x][hoverValue.y] = NodeSuperState.QUEUED.value;
+                queuedValue.x = hoverValue.x;
+                queuedValue.y = hoverValue.y;
+            }
+        }
+    }
 
     // private boolean partOfCompleteLink(int i, int j) {
     //     int baseNineIndex = 9 * i + j;
