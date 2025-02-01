@@ -7,9 +7,15 @@ import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Robot;
 import frc.robot.RobotMap.PhotonvisionConstants;
+
+import com.pathplanner.lib.path.PathConstraints;
+import com.pathplanner.lib.path.PathPlannerPath;
+import com.pathplanner.lib.path.Waypoint;
+import java.util.List;
 
 import com.pathplanner.lib.path.PathConstraints;
 import com.pathplanner.lib.path.PathPlannerPath;
@@ -22,6 +28,7 @@ public class AutoAlign extends Command {
   PIDController controller;
   AprilTagFieldLayout tagLayout;
   int tag;
+
 
 
   private double normalizeAngle(double angle) {
@@ -43,6 +50,7 @@ public class AutoAlign extends Command {
     addRequirements(Robot.swerve);
 
 
+
     controller = new PIDController(0.07, 0, 0.01);
     controller.enableContinuousInput(-180, 180);
     controller.setTolerance(2);
@@ -55,6 +63,9 @@ public class AutoAlign extends Command {
 
   @Override
   public void execute() {
+
+    System.out.println(angle);
+    Robot.swerve.drive(new Translation2d(), controller.calculate(normalizeAngle(Robot.navX.getAngle()), angle), true);
 
     System.out.println(angle);
     Robot.swerve.drive(new Translation2d(), controller.calculate(normalizeAngle(Robot.navX.getAngle()), angle), true);

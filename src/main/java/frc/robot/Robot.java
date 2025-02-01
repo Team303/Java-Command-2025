@@ -35,6 +35,7 @@ import org.littletonrobotics.junction.wpilog.WPILOGWriter;
 import frc.commands.drive.DefaultDrive;
 import frc.commands.drive.DriveWait;
 import frc.commands.drive.TurnToAngle;
+import frc.modules.OperatorControlModule;
 import frc.modules.PhotonvisionModule;
 import frc.robot.util.LocalADStarAK;
 // import frc.commands.drive.TurnToSpeaker;
@@ -52,12 +53,15 @@ public class Robot extends LoggedRobot {
 	public static final AHRS navX = new AHRS();
 	public static PhotonvisionModule photonvision;
 	public static DriveSubsystem swerve;
+	public static OperatorControlModule operatorControl;
 	// public static Logger logger;
 
 	@Override
 	public void robotInit() {
 		photonvision = new PhotonvisionModule();
-		swerve = new DriveSubsystem();
+		// swerve = new DriveSubsystem();
+		swerve =null;
+		operatorControl = new OperatorControlModule();
 		//Subsystem initialization goes here
 		swerve.resetOdometry();
 		NamedCommands.registerCommand("Auto Align 9", new SequentialCommandGroup(
@@ -79,13 +83,13 @@ public class Robot extends LoggedRobot {
 			new PowerDistribution(13, ModuleType.kRev); // Enables power distribution logging
 		} else {
 			// setUseTiming(false); // Run as fast as possible
-			String logPath = LogFileUtil.findReplayLog(); // Pull the replay log from
-			// AdvantageScope (or prompt the
-			// // user)
-			//
-			Logger.setReplaySource(new WPILOGReader(logPath)); // Read replay log
-			Logger.addDataReceiver(new WPILOGWriter(LogFileUtil.addPathSuffix(logPath,"_sim"))); // Save outputs to a
-			Logger.addDataReceiver(new NT4Publisher()); // new log
+			// String logPath = LogFileUtil.findReplayLog(); // Pull the replay log from
+			// // AdvantageScope (or prompt the
+			// // // user)
+			// //
+			// Logger.setReplaySource(new WPILOGReader(logPath)); // Read replay log
+			// Logger.addDataReceiver(new WPILOGWriter(LogFileUtil.addPathSuffix(logPath,"_sim"))); // Save outputs to a
+			// Logger.addDataReceiver(new NT4Publisher()); // new log
 		}
 
 		Logger.start();
@@ -97,8 +101,8 @@ public class Robot extends LoggedRobot {
 		AutonomousProgram.addAutosToShuffleboard();
 		Pathfinding.setPathfinder(new LocalADStarAK());
 		//setDefaultCommand initialization goes here
-		swerve.setDefaultCommand(new DefaultDrive(true));
-		swerve.resetOnlyNavX();
+		// swerve.setDefaultCommand(new DefaultDrive(true));
+		// swerve.resetOnlyNavX();
 		CameraServer.startAutomaticCapture();
 		//Driver Camera code:
 		// CvSink cvSink = CameraServer.getVideo();
@@ -111,21 +115,22 @@ public class Robot extends LoggedRobot {
 		// swerve.periodicReset();
 	}
 
-	@Override
-	public void simulationInit() {
-		configureButtonBindings();
-	}
+	// @Override
+	// public void simulationInit() {
+	// 	configureButtonBindings();
+	// }
 
 	private void configureButtonBindings() {
 		// driverController.y().onTrue(Commands.runOnce(() ->
 		// swerve.resetOdometry(swerve.getPose())));
 		
-
 		// driverController.y().onTrue(new InstantCommand(swerve::resetOnlyNavX));
-		driverController.y().onTrue(Commands.runOnce(() -> swerve.resetOdometry()));
-		operatorController.pov(180).onTrue(new TurnToAngle(0));
-		operatorController.pov(90).onTrue(new TurnToAngle(60));
-		operatorController.pov(270).onTrue(new TurnToAngle(-60));
+		// driverController.y().onTrue(Commands.runOnce(() -> swerve.resetOdometry()));
+		operatorController.pov(0).onTrue(Commands.runOnce(() -> operatorControl.moveUp()));
+		operatorController.pov(90).onTrue(Commands.runOnce(() -> operatorControl.moveRight()));
+		operatorController.pov(180).onTrue(Commands.runOnce(() -> operatorControl.moveDown()));
+		operatorController.pov(270).onTrue(Commands.runOnce(() -> operatorControl.moveLeft()));
+		operatorController.a().onTrue(Commands.runOnce(()-> operatorControl.queuePlacement()));
 		// driverController.a().toggleOnTrue(new TurnToAngle(0).repeatedly());
 
 		driverController.a().onTrue(new AutoAlign(9));

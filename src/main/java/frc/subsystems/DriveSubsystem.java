@@ -48,6 +48,7 @@ import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.math.system.plant.DCMotor;
+import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -57,6 +58,9 @@ import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj2.command.Command;
+
+import com.pathplanner.lib.config.ModuleConfig;
+import com.pathplanner.lib.config.PIDConstants;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.modules.PhotonvisionModule.CameraName;
 import frc.modules.SwerveModule;
@@ -268,6 +272,7 @@ public class DriveSubsystem extends SubsystemBase {
     // backLeft.getDrivePosition();
     // backRight.getDrivePosition();
 
+
     try {
       initialLayout = AprilTagFieldLayout.loadFromResource(AprilTagFields.k2025Reefscape.m_resourceFile);
       Optional<Alliance> alliance = DriverStation.getAlliance();
@@ -283,6 +288,7 @@ public class DriveSubsystem extends SubsystemBase {
     }
     aprilTagField = initialLayout;
     if (Robot.isReal()) {
+
 
       visionPoseEstimator[0] = new PhotonPoseEstimator(aprilTagField,
           PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR,
@@ -315,12 +321,11 @@ public class DriveSubsystem extends SubsystemBase {
         this::resetOdometry, // Method to reset odometry (will be called if your auto has a starting pose)
         this::getRobotRelativeSpeeds, // ChassisSpeeds supplier. MUST BE ROBOT RELATIVE
         this::robotRelativeDrive, // Method that will drive the robot given ROBOT RELATIVE ChassisSpeeds
-        new PPHolonomicDriveController(new PIDConstants(9, 0, 0.5), new PIDConstants(8, 0, 0)), new RobotConfig(
+        new PPHolonomicDriveController(new PIDConstants(5, 0.0, 0.0), new PIDConstants(8, 0, 0)), new RobotConfig(
             Units.lbsToKilograms(RobotMap.Swerve.ROBOT_MASS),
             RobotMap.Swerve.ROBOT_MOI,
-            new ModuleConfig(Units.inchesToMeters(2), kMaxSpeed * 3, kMaxAngularSpeed,
-                new DCMotor(12, 7.09, 366, 2, Units.rotationsPerMinuteToRadiansPerSecond(6000), 1), 130, 1),
-            frontLeftLocation, frontRightLocation, backLeftLocation, backRightLocation),
+            new ModuleConfig(Units.inchesToMeters(2), kMaxSpeed, kMaxAngularSpeed,
+                new DCMotor(12, 7.09, 366, 2, Units.rotationsPerMinuteToRadiansPerSecond(6000), 1), 130, 1), frontLeftLocation, frontRightLocation, backLeftLocation, backRightLocation ),  
         () -> {
           // Boolean supplier that controls when the path will be mirrored for the red
           // alliance
@@ -338,19 +343,18 @@ public class DriveSubsystem extends SubsystemBase {
   }
 
   // public void followTrajectory(SwerveSample sample) {
-  // // Get the current pose of the robot
-  // Pose2d pose = getPose();
+  //       // Get the current pose of the robot
+  //       Pose2d pose = getPose();
 
-  // // Generate the next speeds for the robot
-  // ChassisSpeeds speeds = new ChassisSpeeds(
-  // sample.vx + xController.calculate(pose.getX(), sample.x),
-  // sample.vy + yController.calculate(pose.getY(), sample.y),
-  // sample.omega + headingController.calculate(pose.getRotation().getRadians(),
-  // sample.heading)
-  // );
+  //       // Generate the next speeds for the robot
+  //       ChassisSpeeds speeds = new ChassisSpeeds(
+  //           sample.vx + xController.calculate(pose.getX(), sample.x),
+  //           sample.vy + yController.calculate(pose.getY(), sample.y),
+  //           sample.omega + headingController.calculate(pose.getRotation().getRadians(), sample.heading)
+  //       );
 
-  // // Apply the generated speeds
-  // drive();
+  //       // Apply the generated speeds
+  //       drive();
   // }
 
   /**
