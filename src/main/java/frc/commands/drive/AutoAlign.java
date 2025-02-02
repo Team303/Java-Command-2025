@@ -10,11 +10,13 @@ import edu.wpi.first.math.util.Units;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Robot;
+import frc.robot.Robot.FieldPosition;
 import frc.robot.RobotMap.PhotonvisionConstants;
 
 import com.pathplanner.lib.path.PathConstraints;
 import com.pathplanner.lib.path.PathPlannerPath;
 import com.pathplanner.lib.path.Waypoint;
+
 import java.util.List;
 
 import com.pathplanner.lib.path.PathConstraints;
@@ -27,7 +29,7 @@ public class AutoAlign extends Command {
   double angle;
   PIDController controller;
   AprilTagFieldLayout tagLayout;
-  int tag;
+  FieldPosition position;
 
 
 
@@ -45,8 +47,8 @@ public class AutoAlign extends Command {
       return angle;
   }
 
-  public AutoAlign(int tag) {
-    this.tag = tag;
+  public AutoAlign(FieldPosition position) {
+    this.position = position;
     addRequirements(Robot.swerve);
 
 
@@ -58,7 +60,7 @@ public class AutoAlign extends Command {
 
   @Override
   public void initialize() {
-    this.angle = Robot.swerve.calculateFieldPosition(tag).getRotation().getDegrees();
+    this.angle = Robot.swerve.calculateFieldPosition(position).getRotation().getDegrees();
   }
 
   @Override

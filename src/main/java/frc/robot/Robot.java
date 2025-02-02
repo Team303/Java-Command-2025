@@ -18,8 +18,10 @@ import com.pathplanner.lib.auto.NamedCommands;
 import com.pathplanner.lib.pathfinding.Pathfinding;
 
 import edu.wpi.first.cameraserver.CameraServer;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.PowerDistribution;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
@@ -56,20 +58,82 @@ public class Robot extends LoggedRobot {
 	public static OperatorControlModule operatorControl;
 	// public static Logger logger;
 
+	public static enum FieldPosition {
+		RED_REEF_A,
+		RED_REEF_B,
+		RED_REEF_C,
+		RED_REEF_D,
+		RED_REEF_E,
+		RED_REEF_F,
+		RED_REEF_G,
+		RED_REEF_H,
+		RED_REEF_I,
+		RED_REEF_J,
+		RED_REEF_K,
+		RED_REEF_L,
+		BLUE_REEF_A,
+		BLUE_REEF_B,
+		BLUE_REEF_C,
+		BLUE_REEF_D,
+		BLUE_REEF_E,
+		BLUE_REEF_F,
+		BLUE_REEF_G,
+		BLUE_REEF_H,
+		BLUE_REEF_I,
+		BLUE_REEF_J,
+		BLUE_REEF_K,
+		BLUE_REEF_L,
+		BLUE_LEFT_CORALSUBSTATION,
+		BLUE_RIGHT_CORALSUBSTATION,
+		RED_LEFT_CORALSUBSTATION,
+		RED_RIGHT_CORALSUBSTATION,
+		BLUE_PROCESSOR,
+		RED_PROCESSOR,
+		RED_BARGE,
+		BLUE_BARGE,
+		CURRENT_POSE
+	}
+	public static enum ReefPosition {
+		RED_REEF_A,
+		RED_REEF_B,
+		RED_REEF_C,
+		RED_REEF_D,
+		RED_REEF_E,
+		RED_REEF_F,
+		RED_REEF_G,
+		RED_REEF_H,
+		RED_REEF_I,
+		RED_REEF_J,
+		RED_REEF_K,
+		RED_REEF_L,
+		BLUE_REEF_A,
+		BLUE_REEF_B,
+		BLUE_REEF_C,
+		BLUE_REEF_D,
+		BLUE_REEF_E,
+		BLUE_REEF_F,
+		BLUE_REEF_G,
+		BLUE_REEF_H,
+		BLUE_REEF_I,
+		BLUE_REEF_J,
+		BLUE_REEF_K,
+		BLUE_REEF_L,
+	}
+
 	@Override
 	public void robotInit() {
 		photonvision = new PhotonvisionModule();
-		// swerve = new DriveSubsystem();
-		swerve =null;
+		swerve = new DriveSubsystem();
+		// swerve = new SSubsystem();
 		operatorControl = new OperatorControlModule();
 		//Subsystem initialization goes here
 		swerve.resetOdometry();
 		NamedCommands.registerCommand("Auto Align 9", new SequentialCommandGroup(
-			new AutoAlign(9).withTimeout(6)
+			new AutoAlign(FieldPosition.RED_REEF_E).withTimeout(6)
 		));
 
 		NamedCommands.registerCommand("Auto Align 11", new SequentialCommandGroup(
-			new AutoAlign(11).withTimeout(6)
+			new AutoAlign(FieldPosition.RED_REEF_I).withTimeout(6)
 		));
 
 		//NamedCommands.registerCommands() goes here
@@ -89,7 +153,7 @@ public class Robot extends LoggedRobot {
 			// //
 			// Logger.setReplaySource(new WPILOGReader(logPath)); // Read replay log
 			// Logger.addDataReceiver(new WPILOGWriter(LogFileUtil.addPathSuffix(logPath,"_sim"))); // Save outputs to a
-			// Logger.addDataReceiver(new NT4Publisher()); // new log
+			Logger.addDataReceiver(new NT4Publisher()); // new log
 		}
 
 		Logger.start();
@@ -101,8 +165,8 @@ public class Robot extends LoggedRobot {
 		AutonomousProgram.addAutosToShuffleboard();
 		Pathfinding.setPathfinder(new LocalADStarAK());
 		//setDefaultCommand initialization goes here
-		// swerve.setDefaultCommand(new DefaultDrive(true));
-		// swerve.resetOnlyNavX();
+		swerve.setDefaultCommand(new DefaultDrive(true));
+		swerve.resetOnlyNavX();
 		CameraServer.startAutomaticCapture();
 		//Driver Camera code:
 		// CvSink cvSink = CameraServer.getVideo();
@@ -112,7 +176,7 @@ public class Robot extends LoggedRobot {
 
 	@Override
 	public void disabledInit() {
-		// swerve.periodicReset();
+		swerve.periodicReset();
 	}
 
 	// @Override
@@ -121,8 +185,8 @@ public class Robot extends LoggedRobot {
 	// }
 
 	private void configureButtonBindings() {
-		// driverController.y().onTrue(Commands.runOnce(() ->
-		// swerve.resetOdometry(swerve.getPose())));
+		driverController.y().onTrue(Commands.runOnce(() ->
+		swerve.resetOdometry(swerve.getPose())));
 		
 		// driverController.y().onTrue(new InstantCommand(swerve::resetOnlyNavX));
 		// driverController.y().onTrue(Commands.runOnce(() -> swerve.resetOdometry()));
@@ -130,12 +194,35 @@ public class Robot extends LoggedRobot {
 		operatorController.pov(90).onTrue(Commands.runOnce(() -> operatorControl.moveRight()));
 		operatorController.pov(180).onTrue(Commands.runOnce(() -> operatorControl.moveDown()));
 		operatorController.pov(270).onTrue(Commands.runOnce(() -> operatorControl.moveLeft()));
-		operatorController.a().onTrue(Commands.runOnce(()-> operatorControl.queuePlacement()));
+		operatorController.start().onTrue(Commands.runOnce(()-> operatorControl.queuePlacement()));
+		operatorController.back().onTrue(Commands.runOnce(()-> operatorControl.setPiece()));
+		operatorController.rightBumper().onTrue(Commands.runOnce(() -> operatorControl.toggleStrategy()));
+
+
+
+
+
+		// if(DriverStation.getAlliance().isPresent()&&DriverStation.getAlliance().get()==Alliance.Blue){
+		// 	driverController.leftBumper().onTrue(swerve.pathfindthenFollowPath(FieldPosition.BLUE_LEFT_CORALSUBSTATION));
+		// } else {
+		// 	driverController.leftBumper().onTrue(swerve.pathfindthenFollowPath(FieldPosition.RED_LEFT_CORALSUBSTATION));
+		// }
+		// if(DriverStation.getAlliance().isPresent()&&DriverStation.getAlliance().get()==Alliance.Blue){
+		// 	driverController.rightBumper().onTrue(swerve.pathfindthenFollowPath(FieldPosition.BLUE_RIGHT_CORALSUBSTATION));
+		// } else {
+		// 	driverController.rightBumper().onTrue(swerve.pathfindthenFollowPath(FieldPosition.RED_RIGHT_CORALSUBSTATION));
+		// }
+		//TODO: Add scoring routine into start button
+		//TODO: Add scoring routine into start button
+		//TODO: Add scoring routine into start button
+		//TODO: Add scoring routine into start button
+		driverController.start().onTrue((Commands.runOnce(() -> operatorControl.lockIn()).andThen(swerve.pathfindthenFollowPath(operatorControl.getQueuedPosition())).andThen(() -> operatorControl.lockOut())).unless(() -> operatorControl.queuedValue == null));
+
 		// driverController.a().toggleOnTrue(new TurnToAngle(0).repeatedly());
 
-		driverController.a().onTrue(new AutoAlign(9));
-		driverController.x().onTrue(swerve.followPathfinding(11));
-		driverController.b().onTrue(swerve.followPathfinding(9));
+		driverController.a().onTrue(new AutoAlign(FieldPosition.RED_REEF_E));
+		// driverController.x().onTrue(swerve.pathfindthenFollowPath(FieldPosition.RED_REEF_I));
+		// driverController.b().onTrue(swerve.pathfindthenFollowPath(FieldPosition.RED_REEF_E));
 
 		//Game-specific Button Bindings go here
 

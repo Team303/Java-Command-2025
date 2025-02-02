@@ -58,6 +58,7 @@ import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 
 import com.pathplanner.lib.config.ModuleConfig;
 import com.pathplanner.lib.config.PIDConstants;
@@ -66,6 +67,7 @@ import frc.modules.PhotonvisionModule.CameraName;
 import frc.modules.SwerveModule;
 import frc.robot.Robot;
 import frc.robot.RobotMap;
+import frc.robot.Robot.FieldPosition;
 import frc.robot.RobotMap.PhotonvisionConstants;
 import frc.robot.RobotMap.Swerve;
 
@@ -272,7 +274,6 @@ public class DriveSubsystem extends SubsystemBase {
     // backLeft.getDrivePosition();
     // backRight.getDrivePosition();
 
-
     try {
       initialLayout = AprilTagFieldLayout.loadFromResource(AprilTagFields.k2025Reefscape.m_resourceFile);
       Optional<Alliance> alliance = DriverStation.getAlliance();
@@ -287,30 +288,29 @@ public class DriveSubsystem extends SubsystemBase {
       initialLayout = null;
     }
     aprilTagField = initialLayout;
-    if (Robot.isReal()) {
+    // if (Robot.isReal()) {
 
-
-      visionPoseEstimator[0] = new PhotonPoseEstimator(aprilTagField,
-          PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR,
-          PhotonvisionConstants.ROBOT_TO_FRONT_LEFT_CAMERA);
-      // // visionPoseEstimatorRight = new PhotonPoseEstimator(aprilTagField,
-      // // PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR,
-      // // Robot.photonvision.getCamera(CameraName.CAM2),
-      // // PhotonvisionConstants.ROBOT_TO_RIGHT_CAMERA);
-      visionPoseEstimator[1] = new PhotonPoseEstimator(aprilTagField,
-          PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR,
-          PhotonvisionConstants.ROBOT_TO_FRONT_RIGHT_CAMERA);
-      // // visionPoseEstimatorLeft = new PhotonPoseEstimator(aprilTagField,
-      // // PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR,
-      // // Robot.photonvision.getCamera(CameraName.CAM4),
-      // // PhotonvisionConstants.ROBOT_TO_BACK_RIGHT_CAMERA);
-      // visionPoseEstimator[0].setMultiTagFallbackStrategy(PoseStrategy.LOWEST_AMBIGUITY);
-      // //
-      // visionPoseEstimatorRight.setMultiTagFallbackStrategy(PoseStrategy.LOWEST_AMBIGUITY);
-      // visionPoseEstimator[1].setMultiTagFallbackStrategy(PoseStrategy.LOWEST_AMBIGUITY);
-      // //
-      // visionPoseEstimatorLeft.setMultiTagFallbackStrategy(PoseStrategy.LOWEST_AMBIGUITY);
-    }
+    visionPoseEstimator[0] = new PhotonPoseEstimator(aprilTagField,
+        PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR,
+        PhotonvisionConstants.ROBOT_TO_FRONT_LEFT_CAMERA);
+    // // visionPoseEstimatorRight = new PhotonPoseEstimator(aprilTagField,
+    // // PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR,
+    // // Robot.photonvision.getCamera(CameraName.CAM2),
+    // // PhotonvisionConstants.ROBOT_TO_RIGHT_CAMERA);
+    visionPoseEstimator[1] = new PhotonPoseEstimator(aprilTagField,
+        PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR,
+        PhotonvisionConstants.ROBOT_TO_FRONT_RIGHT_CAMERA);
+    // // visionPoseEstimatorLeft = new PhotonPoseEstimator(aprilTagField,
+    // // PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR,
+    // // Robot.photonvision.getCamera(CameraName.CAM4),
+    // // PhotonvisionConstants.ROBOT_TO_BACK_RIGHT_CAMERA);
+    // visionPoseEstimator[0].setMultiTagFallbackStrategy(PoseStrategy.LOWEST_AMBIGUITY);
+    // //
+    // visionPoseEstimatorRight.setMultiTagFallbackStrategy(PoseStrategy.LOWEST_AMBIGUITY);
+    // visionPoseEstimator[1].setMultiTagFallbackStrategy(PoseStrategy.LOWEST_AMBIGUITY);
+    // //
+    // visionPoseEstimatorLeft.setMultiTagFallbackStrategy(PoseStrategy.LOWEST_AMBIGUITY);
+    // }
 
     poseEstimator = new SwerveDrivePoseEstimator(kinematics, Robot.navX.getRotation2d(), getModulePositions(),
         new Pose2d(new Translation2d(), new Rotation2d()),
@@ -325,7 +325,8 @@ public class DriveSubsystem extends SubsystemBase {
             Units.lbsToKilograms(RobotMap.Swerve.ROBOT_MASS),
             RobotMap.Swerve.ROBOT_MOI,
             new ModuleConfig(Units.inchesToMeters(2), kMaxSpeed, kMaxAngularSpeed,
-                new DCMotor(12, 7.09, 366, 2, Units.rotationsPerMinuteToRadiansPerSecond(6000), 1), 130, 1), frontLeftLocation, frontRightLocation, backLeftLocation, backRightLocation ),  
+                new DCMotor(12, 7.09, 366, 2, Units.rotationsPerMinuteToRadiansPerSecond(6000), 1), 130, 1),
+            frontLeftLocation, frontRightLocation, backLeftLocation, backRightLocation),
         () -> {
           // Boolean supplier that controls when the path will be mirrored for the red
           // alliance
@@ -343,18 +344,19 @@ public class DriveSubsystem extends SubsystemBase {
   }
 
   // public void followTrajectory(SwerveSample sample) {
-  //       // Get the current pose of the robot
-  //       Pose2d pose = getPose();
+  // // Get the current pose of the robot
+  // Pose2d pose = getPose();
 
-  //       // Generate the next speeds for the robot
-  //       ChassisSpeeds speeds = new ChassisSpeeds(
-  //           sample.vx + xController.calculate(pose.getX(), sample.x),
-  //           sample.vy + yController.calculate(pose.getY(), sample.y),
-  //           sample.omega + headingController.calculate(pose.getRotation().getRadians(), sample.heading)
-  //       );
+  // // Generate the next speeds for the robot
+  // ChassisSpeeds speeds = new ChassisSpeeds(
+  // sample.vx + xController.calculate(pose.getX(), sample.x),
+  // sample.vy + yController.calculate(pose.getY(), sample.y),
+  // sample.omega + headingController.calculate(pose.getRotation().getRadians(),
+  // sample.heading)
+  // );
 
-  //       // Apply the generated speeds
-  //       drive();
+  // // Apply the generated speeds
+  // drive();
   // }
 
   /**
@@ -463,43 +465,59 @@ public class DriveSubsystem extends SubsystemBase {
 
   }
 
-  // public Command followPathFromFile(String pathToFile) {
-  // PathPlannerPath path = PathPlannerPath.fromPathFile(pathToFile);
-  // return AutoBuilder.followPath(path);
-  // }
+  public PathPlannerPath pathFromFile(String pathToFile) {
+    try {
+      PathPlannerPath path = PathPlannerPath.fromPathFile(pathToFile);
+      return path;
+    } catch (Exception e) {
+      System.out.println(e);
+      return null;
+    }
+  }
 
   public Command getAutonomousCommand(String autoName) {
     return new PathPlannerAuto(autoName);
   }
 
-  public Command followPathOnTheFly(int tag) {
+  public Command followPathOnTheFly(FieldPosition position) {
     PathConstraints constraints = new PathConstraints(3.0, 3.0, 2 * Math.PI, 4 * Math.PI); // The constraints for this
                                                                                            // path.
     List<Waypoint> waypoints = PathPlannerPath
-        .waypointsFromPoses(Robot.swerve.getPose(),new Pose2d(calculateFieldPosition(tag).getTranslation(),
-            Rotation2d.fromDegrees(Robot.swerve.calculateFieldPosition(tag).getRotation().getDegrees()+60)));
+        .waypointsFromPoses(Robot.swerve.getPose(), new Pose2d(calculateFieldPosition(position).getTranslation(),
+            Rotation2d.fromDegrees(Robot.swerve.calculateFieldPosition(position).getRotation().getDegrees() + 60)));
     PathPlannerPath path = new PathPlannerPath(
         waypoints,
         constraints,
         null, // The ideal starting state, this is only relevant for pre-planned paths, so can
               // be null for on-the-fly paths.
-        new GoalEndState(0.0, Rotation2d.fromDegrees(Robot.swerve.calculateFieldPosition(tag).getRotation().getDegrees()+60)) // Goal end state.
-                                                                                                     // You can set a
-                                                                                                     // holonomic
-                                                                                                     // rotation here.
-                                                                                                     // If using a
-                                                                                                     // differential
-                                                                                                     // drivetrain, the
-                                                                                                     // rotation will
-                                                                                                     // have no effect.
+        new GoalEndState(0.0,
+            Rotation2d.fromDegrees(Robot.swerve.calculateFieldPosition(position).getRotation().getDegrees() + 60)) // Goal
+    // end
+    // state.
+    // You can set a
+    // holonomic
+    // rotation here.
+    // If using a
+    // differential
+    // drivetrain, the
+    // rotation will
+    // have no effect.
     );
     path.preventFlipping = true;
     return AutoBuilder.followPath(path);
   }
-  public Command followPathfinding(int tag) {
-    Pose2d targetPose = new Pose2d(calculateFieldPosition(tag).getTranslation(),Rotation2d.fromDegrees(Robot.swerve.calculateFieldPosition(tag).getRotation().getDegrees()+60));
+
+  public Command followPathfinding(FieldPosition position) {
+    Pose2d targetPose = new Pose2d(calculateFieldPosition(position).getTranslation(),
+        Rotation2d.fromDegrees(Robot.swerve.calculateFieldPosition(position).getRotation().getDegrees() + 60));
     PathConstraints constraints = new PathConstraints(3.0, 3.0, 2 * Math.PI, 4 * Math.PI); // The constraints for this
-    return AutoBuilder.pathfindToPose(targetPose,constraints,0.0);
+    return AutoBuilder.pathfindToPose(targetPose, constraints, 0.0);
+  }
+
+  public Command pathfindthenFollowPath(FieldPosition position){
+    if(position==FieldPosition.CURRENT_POSE) return Commands.none();
+    PathConstraints constraints = new PathConstraints(3.0, 3.0, 2 * Math.PI, 4 * Math.PI); // The constraints for this
+    return AutoBuilder.pathfindThenFollowPath(pathFromFile(position.name()), constraints);
   }
 
   // /** Updates the field relative position of the robot. */
@@ -671,8 +689,10 @@ public class DriveSubsystem extends SubsystemBase {
     Robot.navX.reset();
 
     poseEstimator.resetPosition(Robot.navX.getRotation2d(), getModulePositions(),
-        new Pose2d(new Translation2d(Units.inchesToMeters(150.49), Units.inchesToMeters(100.17)),
-            Rotation2d.fromDegrees(isBlue ? 0 : 60)));
+        new Pose2d(
+            new Translation2d(calculateFieldPosition(FieldPosition.RED_REEF_A).getX(),
+                calculateFieldPosition(FieldPosition.RED_REEF_A).getY()),
+            Rotation2d.fromDegrees(isBlue ? 0 : 180)));
 
   }
 
@@ -722,35 +742,49 @@ public class DriveSubsystem extends SubsystemBase {
         Rotation2d.fromDegrees(isBlue ? 0 : 180)));
   }
 
-  public Pose2d calculateFieldPosition(int tag) {
 
-    switch (tag) {
+  public Pose2d calculateFieldPosition(FieldPosition position) {
+
+    switch (position) {
       // TODO: Fix angles to be relative to real starting position
       // TODO: Add support for blue alliance
-      case 1:
-      return new Pose2d(1,1,Rotation2d.fromDegrees(60.0));
-      case 2:
-      return new Pose2d(1,1,Rotation2d.fromDegrees(180.0));
-      case 3:
-      return new Pose2d(1,1,Rotation2d.fromDegrees(210.0));
-      case 4:
-      return new Pose2d(1,1,Rotation2d.fromDegrees(300.0));
-      case 5:
-      return new Pose2d(1,1,Rotation2d.fromDegrees(300.0));
-      case 6:
-      return new Pose2d(1,1,Rotation2d.fromDegrees(240.0));
-      case 7:
-      return new Pose2d(2.9,4.04,Rotation2d.fromDegrees(300.0));
-      case 8:
-        return new Pose2d(3.82,2.54,Rotation2d.fromDegrees(0.0));
-      case 9:
-      return new Pose2d(5.29,2.62,Rotation2d.fromDegrees(60.0));
-      case 10:
-      return new Pose2d(5.95,4.12,Rotation2d.fromDegrees(120.0));
-      case 11:
-      return new Pose2d(5.33,5.33,Rotation2d.fromDegrees(180.0));
+      case RED_LEFT_CORALSUBSTATION:
+        return new Pose2d(1, 1, Rotation2d.fromDegrees(60.0));
+      case RED_RIGHT_CORALSUBSTATION:
+        return new Pose2d(1, 1, Rotation2d.fromDegrees(180.0));
+      case RED_PROCESSOR:
+        return new Pose2d(1, 1, Rotation2d.fromDegrees(210.0));
+      case RED_BARGE:
+        return new Pose2d(1, 1, Rotation2d.fromDegrees(300.0));
+      case RED_REEF_K:
+        return new Pose2d(1, 1, Rotation2d.fromDegrees(240.0));
+      case RED_REEF_L:
+        return new Pose2d(1, 1, Rotation2d.fromDegrees(240.0));
+      case RED_REEF_A:
+        return new Pose2d(2.9, 4.025, Rotation2d.fromDegrees(300.0));
+      case RED_REEF_B:
+        return new Pose2d(2.9, 4.025, Rotation2d.fromDegrees(300.0));
+      case RED_REEF_C:
+        return new Pose2d(3.82, 2.54, Rotation2d.fromDegrees(0.0));
+      case RED_REEF_D:
+        return new Pose2d(3.82, 2.54, Rotation2d.fromDegrees(0.0));
+      case RED_REEF_E:
+        return new Pose2d(5.29, 2.62, Rotation2d.fromDegrees(60.0));
+      case RED_REEF_F:
+        return new Pose2d(5.29, 2.62, Rotation2d.fromDegrees(60.0));
+      case RED_REEF_G:
+        return new Pose2d(5.95, 4.12, Rotation2d.fromDegrees(120.0));
+      case RED_REEF_H:
+        return new Pose2d(5.95, 4.12, Rotation2d.fromDegrees(120.0));
+      case RED_REEF_I:
+        return new Pose2d(5.33, 5.33, Rotation2d.fromDegrees(180.0));
+      case RED_REEF_J:
+        return new Pose2d(5.33, 5.33, Rotation2d.fromDegrees(180.0));
+      case CURRENT_POSE:
+        return getPose();
       default:
-        return new Pose2d();
+        System.out.println("calculateFieldPosition() received an invalid position");
+        return getPose();
     }
     // boolean isBlue = true;
 
