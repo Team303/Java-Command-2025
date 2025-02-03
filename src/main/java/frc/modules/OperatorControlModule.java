@@ -190,9 +190,11 @@ public class OperatorControlModule extends SubsystemBase {
     public void lockOut() {
         nodeSuperStateValues[queuedValue.x][queuedValue.y] = NodeSuperState.NONE.value;
         nodeStateValues[queuedValue.x][queuedValue.y] = NodeState.CORAL.value;
+        queuedValue=null;
         autoHover();
     }
     public FieldPosition getQueuedPosition() {
+        System.out.println("yeee");
         if(queuedValue==null) {
             return FieldPosition.CURRENT_POSE;
         }

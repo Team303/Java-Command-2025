@@ -188,8 +188,8 @@ public class Robot extends LoggedRobot {
 		// driverController.y().onTrue(Commands.runOnce(() ->
 		// swerve.resetOdometry(swerve.getPose())));
 		
-		driverController.y().onTrue(new InstantCommand(swerve::resetOnlyNavX));
-		// driverController.y().onTrue(Commands.runOnce(() -> swerve.resetOdometry()));
+		// driverController.y().onTrue(new InstantCommand(swerve::resetOnlyNavX));
+		driverController.y().onTrue(Commands.runOnce(() -> swerve.resetOdometry()));
 		operatorController.pov(0).onTrue(Commands.runOnce(() -> operatorControl.moveUp()));
 		operatorController.pov(90).onTrue(Commands.runOnce(() -> operatorControl.moveRight()));
 		operatorController.pov(180).onTrue(Commands.runOnce(() -> operatorControl.moveDown()));
@@ -216,7 +216,8 @@ public class Robot extends LoggedRobot {
 		//TODO: Add scoring routine into start button
 		//TODO: Add scoring routine into start button
 		//TODO: Add scoring routine into start button
-		driverController.start().onTrue((Commands.runOnce(() -> operatorControl.lockIn()).andThen(swerve.pathfindthenFollowPath(operatorControl.getQueuedPosition())).andThen(() -> operatorControl.lockOut())).unless(() -> operatorControl.queuedValue == null));
+		driverController.start().onTrue((Commands.runOnce(() -> operatorControl.lockIn()).andThen(swerve.pathfindthenFollowPath(operatorControl.getQueuedPosition()), Commands.runOnce(() -> operatorControl.lockOut()))).unless(() -> operatorControl.queuedValue == null));
+		// driverController.start().onTrue((Commands.runOnce(() -> operatorControl.lockIn()).andThen(() -> System.out.println("woah")).andThen(() -> operatorControl.lockOut())).unless(() -> operatorControl.queuedValue == null));
 
 		// driverController.a().toggleOnTrue(new TurnToAngle(0).repeatedly());
 

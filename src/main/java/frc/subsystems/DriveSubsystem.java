@@ -515,6 +515,10 @@ public class DriveSubsystem extends SubsystemBase {
   }
 
   public Command pathfindthenFollowPath(FieldPosition position){
+    System.out.println(position.name());
+    System.out.println(position.name());
+    System.out.println(position.name());
+    System.out.println(position.name());
     if(position==FieldPosition.CURRENT_POSE) return Commands.none();
     PathConstraints constraints = new PathConstraints(3.0, 3.0, 2 * Math.PI, 4 * Math.PI); // The constraints for this
     return AutoBuilder.pathfindThenFollowPath(pathFromFile(position.name()), constraints);
@@ -690,9 +694,9 @@ public class DriveSubsystem extends SubsystemBase {
 
     poseEstimator.resetPosition(Robot.navX.getRotation2d(), getModulePositions(),
         new Pose2d(
-            new Translation2d(calculateFieldPosition(FieldPosition.RED_REEF_A).getX(),
-                calculateFieldPosition(FieldPosition.RED_REEF_A).getY()),
-            Rotation2d.fromDegrees(isBlue ? 0 : 180)));
+            new Translation2d(calculateFieldPosition(FieldPosition.RED_REEF_C).getX(),
+                calculateFieldPosition(FieldPosition.RED_REEF_C).getY()),
+            Rotation2d.fromDegrees(isBlue ? 0 : 60)));
 
   }
 
