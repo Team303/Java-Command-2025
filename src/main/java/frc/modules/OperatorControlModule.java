@@ -42,11 +42,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 public class OperatorControlModule extends SubsystemBase {
     public static final ShuffleboardTab OPERATOR_TAB = Shuffleboard.getTab("Operator");
     public static final NetworkTable operator = NetworkTableInstance.getDefault().getTable("Operator");
-    // public static final SendableChooser<HeldObject> heldObjectChooser = new
-    // SendableChooser<HeldObject>();
-    // public static HeldObject heldObjectIn;
 
-    // public static final GenericEntry[][] nodes = new GenericEntry[3][9];
     public static final String[] sideNames = { "A Side", "B Side", "C Side", "D Side", "E Side", "F Side", "G Side",
             "H Side", "I Side", "J Side", "K Side", "L Side" };
 
@@ -69,10 +65,6 @@ public class OperatorControlModule extends SubsystemBase {
 
     private final Alert logQueueOnFilledNode = new Alert("Operator Terminal",
             "Attempted to queue on already-filled node, queue not performed", AlertType.kWarning);
-    // private final Alert logNoMorePieceSpaceCones = new Alert("Operator Terminal",
-    // "No more space to place cones, queue canceled", AlertType.WARNING);
-    // private final Alert logNoMorePieceSpaceCubes = new Alert("Operator Terminal",
-    // "No more space to place cubes, queue canceled", AlertType.WARNING);
     private final Alert logCommandLoopOverrun = new Alert("Operator Terminal",
             "Command loop overrun", AlertType.kError);
     private final Alert logNoMoreSpace = new Alert("Operator Terminal","No more space to place coral ;-;",AlertType.kWarning);
@@ -266,23 +258,6 @@ public class OperatorControlModule extends SubsystemBase {
             }
         }
     }
-    // private void changeTarget(int x, int y) {
-    // System.out.print(x + " : " + y);
-    // if (!hoverValue.equals(queuedValue)) {
-    // nodeSuperStateValues[hoverValue.x][hoverValue.y] = NodeSuperState.NONE.value;
-    // } else {
-    // nodeSuperStateValues[hoverValue.x][hoverValue.y] =
-    // NodeSuperState.QUEUED.value;
-    // }
-    // if (nodeSuperStateValues[x][y] == NodeSuperState.NONE.value
-    // || nodeSuperStateValues[x][y] == NodeSuperState.QUEUED.value) {
-    // nodeSuperStateValues[x][y] = NodeSuperState.HOVER.value;
-    // hoverValue.x = x;
-    // hoverValue.y = y;
-    // System.out.println("manual Select");
-    // return;
-    // }
-    // }
 
     public void setPiece() {
         if (nodeStateValues[hoverValue.x][hoverValue.y] == NodeState.CORAL.value) {
@@ -338,6 +313,7 @@ public class OperatorControlModule extends SubsystemBase {
         // if (queuedValue != null) {
         //     nodeSuperStateValues[queuedValue.x][queuedValue.y] = NodeSuperState.NONE.value;
         // }
+
         // get current pose
         // find distance between curpose and all scoring poses
         // sort by distance to scoring pose
@@ -409,105 +385,6 @@ public class OperatorControlModule extends SubsystemBase {
         if(hoverValue == null) {
             autoHover();
         }
-
-        // lol.set(true);
-        // //check if something was selected by touchscreen
-        // for (int i = 0; i < nodes.length; i++) {
-        // for (int j = 0; j < nodes[i].length; j++) {
-        // if (nodes[i][j].getInteger(0) == 6) {
-        // switch (nodeSuperStateValues[i][j]) {
-        // case 0:
-        // changeTarget(i, j);
-        // queuePlacement();
-        // break;
-        // case 3:
-        // queuePlacement();
-        // break;
-        // case 4:
-        // queueManualOverride = false;
-        // setPiece();
-        // break;
-        // }
-        // }
-        // if (nodes[i][j].getInteger(0)== 7) {
-        // nodeStateValues[i][j]=0;
-        // nodeSuperStateValues[i][j]=0;
-        // }
-        // }
-        // }
-        // // Check which links are complete
-        // for (int i = 0; i < 3; i++) {
-        // for (int j = 1; j < 8;) {
-        // if (nodeStateValues[i][j] != NodeState.NONE.value && nodeStateValues[i][j +
-        // 1] != NodeState.NONE.value
-        // && nodeStateValues[i][j - 1] != NodeState.NONE.value) {
-        // linkComplete[7 * i + (j - 1)] = true;
-        // if ((7 * i + j) % 7 == 1) {
-        // linkComplete[7 * i + j] = false;
-        // linkComplete[7 * i + j + 1] = false;
-        // } else if ((7 * i + j) % 7 == 4) {
-        // linkComplete[7 * i + j] = false;
-        // linkComplete[7 * i + j + 1] = false;
-        // linkComplete[7 * i + j - 2] = false;
-        // linkComplete[7 * i + j - 3] = false;
-        // } else if ((7 * i + j) % 7 == 0) {
-        // linkComplete[7 * i + j - 2] = false;
-        // linkComplete[7 * i + j - 3] = false;
-        // }
-        // j = ((j - 1) / 3 + 1) * 3 + 1;
-
-        // } else {
-        // linkComplete[7 * i + (j - 1)] = false;
-        // j++;
-        // }
-        // }
-        // }
-        // if (heldObject != heldObjectIn) {
-        // for (int i = 0; i < 3; i++) {
-        // for (int j = 0; j < 9; j++) {
-        // if (nodeSuperStateValues[i][j] == NodeSuperState.INVALID.value
-        // || nodeSuperStateValues[i][j] == NodeSuperState.QUEUED.value) {
-        // nodeSuperStateValues[i][j] = NodeSuperState.NONE.value;
-        // }
-        // }
-        // }
-        // heldObject = heldObjectIn;
-        // autoQueuePlacement();
-        // }
-        // if (suggestManualOverride && heldObject != HeldObject.NONE) {
-        // suggestManualOverride = false;
-        // }
-        // for (int i = 0; i < 3; i++) {
-        // if ((nodeStateValues[i][3] != NodeState.NONE.value && nodeStateValues[i][4]
-        // != NodeState.NONE.value
-        // && nodeStateValues[i][5] != NodeState.NONE.value)) {
-        // coopertitionBonusAchieved = true;
-        // break;
-        // }
-        // }
-        // if (heldObject == HeldObject.CONE) {
-        // for (int i = 0; i < 2; i++) {
-        // for (int j = 1; j < 8; j += 3) {
-        // nodeSuperStateValues[i][j] = NodeSuperState.INVALID.value;
-        // }
-        // }
-        // } else if (heldObject == HeldObject.CUBE) {
-        // for (int i = 0; i < 2; i++) {
-        // for (int j = 0; j < 9; j++) {
-        // if (j % 3 == 0 || j % 3 == 2) {
-        // nodeSuperStateValues[i][j] = NodeSuperState.INVALID.value;
-        // }
-        // }
-        // }
-        // } else {
-        // for (int i = 0; i < 2; i++) {
-        // for (int j = 0; j < 9; j++) {
-        // if (nodeSuperStateValues[i][j] == NodeSuperState.INVALID.value) {
-        // nodeSuperStateValues[i][j] = NodeSuperState.NONE.value;
-        // }
-        // }
-        // }
-        // }
         if((DriverStation.isFMSAttached() || (!DriverStation.isAutonomous() && !DriverStation.isTeleop() && !DriverStation.isTest()))&&DriverStation.getMatchTime()<30){
             if(currentStrategy == ScoreStrategy.MAX_POINTS) {
                 currentStrategy = ScoreStrategy.MIN_TIME;
