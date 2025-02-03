@@ -203,8 +203,8 @@ public class DriveSubsystem extends SubsystemBase {
     frontLeft = new SwerveModule("Left Front",
         RobotMap.Swerve.LEFT_FRONT_DRIVE_ID,
         RobotMap.Swerve.LEFT_FRONT_STEER_ID,
-        "Drivebase",
-        "Drivebase",
+        "rio",
+        "rio",
         RobotMap.Swerve.LEFT_FRONT_STEER_CANCODER_ID,
         0.2,
         0.0,
@@ -217,8 +217,8 @@ public class DriveSubsystem extends SubsystemBase {
     frontRight = new SwerveModule("Right Front",
         RobotMap.Swerve.RIGHT_FRONT_DRIVE_ID,
         RobotMap.Swerve.RIGHT_FRONT_STEER_ID,
-        "Drivebase",
-        "Drivebase",
+        "rio",
+        "rio",
         RobotMap.Swerve.RIGHT_FRONT_STEER_CANCODER_ID,
         0.2,
         0.0,
@@ -230,8 +230,8 @@ public class DriveSubsystem extends SubsystemBase {
     backLeft = new SwerveModule("Left Back",
         RobotMap.Swerve.LEFT_BACK_DRIVE_ID,
         RobotMap.Swerve.LEFT_BACK_STEER_ID,
-        "Drivebase",
-        "Drivebase",
+        "rio",
+        "rio",
         RobotMap.Swerve.LEFT_BACK_STEER_CANCODER_ID,
         0.2,
         0.0,
@@ -243,8 +243,8 @@ public class DriveSubsystem extends SubsystemBase {
     backRight = new SwerveModule("Right Back",
         RobotMap.Swerve.RIGHT_BACK_DRIVE_ID,
         RobotMap.Swerve.RIGHT_BACK_STEER_ID,
-        "Drivebase",
-        "Drivebase",
+        "rio",
+        "rio",
         RobotMap.Swerve.RIGHT_BACK_STEER_CANCODER_ID,
         0.2,
         0.0,
@@ -267,7 +267,7 @@ public class DriveSubsystem extends SubsystemBase {
     frontLeft.invertDriveMotor(false);
     backLeft.invertDriveMotor(true);
     frontRight.invertDriveMotor(false);
-    backRight.invertDriveMotor(true);
+    backRight.invertDriveMotor(false);
 
     // frontLeft.getDrivePosition();
     // frontRight.getDrivePosition();
@@ -390,7 +390,7 @@ public class DriveSubsystem extends SubsystemBase {
 
     // frontLeftAngle.setDouble(state[0].angle.getDegrees());
     // frontRightAngle.setDouble(state[1].angle.getDegrees());
-    // backLeftAngle.setDouble(state[2].angle.getDegrees());
+    backLeftAngle.setDouble(state[2].angle.getDegrees());
     // backRightAngle.setDouble(state[3].angle.getDegrees());
 
     Logger.recordOutput("Swerve Module States", state);

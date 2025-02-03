@@ -185,10 +185,10 @@ public class Robot extends LoggedRobot {
 	// }
 
 	private void configureButtonBindings() {
-		driverController.y().onTrue(Commands.runOnce(() ->
-		swerve.resetOdometry(swerve.getPose())));
+		// driverController.y().onTrue(Commands.runOnce(() ->
+		// swerve.resetOdometry(swerve.getPose())));
 		
-		// driverController.y().onTrue(new InstantCommand(swerve::resetOnlyNavX));
+		driverController.y().onTrue(new InstantCommand(swerve::resetOnlyNavX));
 		// driverController.y().onTrue(Commands.runOnce(() -> swerve.resetOdometry()));
 		operatorController.pov(0).onTrue(Commands.runOnce(() -> operatorControl.moveUp()));
 		operatorController.pov(90).onTrue(Commands.runOnce(() -> operatorControl.moveRight()));
