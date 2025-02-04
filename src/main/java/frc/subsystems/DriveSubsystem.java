@@ -515,10 +515,6 @@ public class DriveSubsystem extends SubsystemBase {
   }
 
   public Command pathfindthenFollowPath(FieldPosition position){
-    System.out.println(position.name());
-    System.out.println(position.name());
-    System.out.println(position.name());
-    System.out.println(position.name());
     if(position==FieldPosition.CURRENT_POSE) return Commands.none();
     PathConstraints constraints = new PathConstraints(3.0, 3.0, 2 * Math.PI, 4 * Math.PI); // The constraints for this
     return AutoBuilder.pathfindThenFollowPath(pathFromFile(position.name()), constraints);

@@ -179,6 +179,11 @@ public class Robot extends LoggedRobot {
 		swerve.periodicReset();
 	}
 
+	@Override
+	public void disabledPeriodic() {
+		operatorControl.searchChange();
+	}
+
 	// @Override
 	// public void simulationInit() {
 	// 	configureButtonBindings();
@@ -216,7 +221,10 @@ public class Robot extends LoggedRobot {
 		//TODO: Add scoring routine into start button
 		//TODO: Add scoring routine into start button
 		//TODO: Add scoring routine into start button
-		driverController.start().onTrue((Commands.runOnce(() -> operatorControl.lockIn()).andThen(swerve.pathfindthenFollowPath(operatorControl.getQueuedPosition()), Commands.runOnce(() -> operatorControl.lockOut()))).unless(() -> operatorControl.queuedValue == null));
+		// driverController.start().onTrue(Commands.runOnce(() -> operatorControl.lockIn()).andThen(swerve.pathfindthenFollowPath(FieldPosition.RED_REEF_A), Commands.runOnce(() -> operatorControl.lockOut())));
+		driverController.start().toggleOnTrue(new SequentialCommandGroup(Commands.runOnce(() -> operatorControl.lockIn()),Commands.runOnce(()->swerve.pathfindthenFollowPath(operatorControl.getQueuedPosition()).addRequirements(swerve)),Commands.runOnce(() -> operatorControl.lockOut())));
+		// driverController.start().toggleOnTrue(new SequentialCommandGroup(Commands.runOnce(() -> System.out.println("1")),Commands.runOnce(() -> System.out.println("2")),Commands.runOnce(() -> System.out.println("3"))));
+			// Commands.runOnce(() -> operatorControl.lockIn()).andThen(swerve.pathfindthenFollowPath(FieldPosition.RED_REEF_A), Commands.runOnce(() -> operatorControl.lockOut())));
 		// driverController.start().onTrue((Commands.runOnce(() -> operatorControl.lockIn()).andThen(() -> System.out.println("woah")).andThen(() -> operatorControl.lockOut())).unless(() -> operatorControl.queuedValue == null));
 
 		// driverController.a().toggleOnTrue(new TurnToAngle(0).repeatedly());

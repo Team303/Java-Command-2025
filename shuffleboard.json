@@ -232,6 +232,228 @@
               "_glyph": 148,
               "_showGlyph": false
             }
+          },
+          "2,4": {
+            "size": [
+              2,
+              1
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///Shuffleboard/Operator/Current Strategy",
+              "_title": "/Shuffleboard/Operator/Current Strategy",
+              "_glyph": 148,
+              "_showGlyph": false
+            }
+          }
+        }
+      }
+    },
+    {
+      "title": "OperatorAutonomous",
+      "autoPopulate": false,
+      "autoPopulatePrefix": "",
+      "widgetPane": {
+        "gridSize": 110.0,
+        "showGrid": true,
+        "hgap": 16.0,
+        "vgap": 16.0,
+        "titleType": 0,
+        "tiles": {
+          "2,5": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "ReefSelector",
+              "_source0": "network_table:///OperatorAutonomous/auto A Side",
+              "_title": "OperatorAutonomous/auto A Side",
+              "_glyph": 148,
+              "_showGlyph": false
+            }
+          },
+          "3,5": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "ReefSelector",
+              "_source0": "network_table:///OperatorAutonomous/auto B Side",
+              "_title": "OperatorAutonomous/auto B Side",
+              "_glyph": 148,
+              "_showGlyph": false
+            }
+          },
+          "4,4": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "ReefSelector",
+              "_source0": "network_table:///OperatorAutonomous/auto C Side",
+              "_title": "OperatorAutonomous/auto C Side",
+              "_glyph": 148,
+              "_showGlyph": false
+            }
+          },
+          "5,3": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "ReefSelector",
+              "_source0": "network_table:///OperatorAutonomous/auto D Side",
+              "_title": "OperatorAutonomous/auto D Side",
+              "_glyph": 148,
+              "_showGlyph": false
+            }
+          },
+          "5,2": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "ReefSelector",
+              "_source0": "network_table:///OperatorAutonomous/auto E Side",
+              "_title": "OperatorAutonomous/auto E Side",
+              "_glyph": 148,
+              "_showGlyph": false
+            }
+          },
+          "4,1": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "ReefSelector",
+              "_source0": "network_table:///OperatorAutonomous/auto F Side",
+              "_title": "OperatorAutonomous/auto F Side",
+              "_glyph": 148,
+              "_showGlyph": false
+            }
+          },
+          "3,0": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "ReefSelector",
+              "_source0": "network_table:///OperatorAutonomous/auto G Side",
+              "_title": "OperatorAutonomous/auto G Side",
+              "_glyph": 148,
+              "_showGlyph": false
+            }
+          },
+          "2,0": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "ReefSelector",
+              "_source0": "network_table:///OperatorAutonomous/auto H Side",
+              "_title": "OperatorAutonomous/auto H Side",
+              "_glyph": 148,
+              "_showGlyph": false
+            }
+          },
+          "1,1": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "ReefSelector",
+              "_source0": "network_table:///OperatorAutonomous/auto I Side",
+              "_title": "OperatorAutonomous/auto I Side",
+              "_glyph": 148,
+              "_showGlyph": false
+            }
+          },
+          "0,2": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "ReefSelector",
+              "_source0": "network_table:///OperatorAutonomous/auto J Side",
+              "_title": "OperatorAutonomous/auto J Side",
+              "_glyph": 148,
+              "_showGlyph": false
+            }
+          },
+          "0,3": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "ReefSelector",
+              "_source0": "network_table:///OperatorAutonomous/auto K Side",
+              "_title": "OperatorAutonomous/auto K Side",
+              "_glyph": 148,
+              "_showGlyph": false
+            }
+          },
+          "1,4": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "ReefSelector",
+              "_source0": "network_table:///OperatorAutonomous/auto L Side",
+              "_title": "OperatorAutonomous/auto L Side",
+              "_glyph": 148,
+              "_showGlyph": false
+            }
+          },
+          "6,1": {
+            "size": [
+              5,
+              1
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///OperatorAutonomous/autoQueue",
+              "_title": "/OperatorAutonomous/autoQueue",
+              "_glyph": 148,
+              "_showGlyph": false
+            }
+          },
+          "0,0": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "Toggle Button",
+              "_source0": "network_table:///Shuffleboard/Operator/LCOR",
+              "_title": "Shuffleboard/Operator/LCOR",
+              "_glyph": 148,
+              "_showGlyph": false
+            }
+          },
+          "5,0": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "Toggle Button",
+              "_source0": "network_table:///Shuffleboard/Operator/RCOR",
+              "_title": "Shuffleboard/Operator/RCOR",
+              "_glyph": 148,
+              "_showGlyph": false
+            }
           }
         }
       }

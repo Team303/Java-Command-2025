@@ -1,12 +1,18 @@
 package frc.autonomous;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import java.awt.Point;
 
+import edu.wpi.first.networktables.NetworkTable;
+import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj2.command.Command;
+import frc.robot.util.ReefState;
+import static frc.modules.OperatorControlModule.onTheFlyAutoStart;;
 
 public class AutonomousProgram {
 
@@ -14,6 +20,9 @@ public class AutonomousProgram {
 	public static final ShuffleboardTab AUTO_TAB = Shuffleboard.getTab("Autonomous");
 	public static SendableChooser<AutonomousProgram> autoChooser = new SendableChooser<>();
 	public static SendableChooser<Double> autoDelayChooser = new SendableChooser<>();
+	public static ArrayList<Point> autoQueue;
+	public static long[][] nodeStateValues = new long[12][4];
+
 
 	static {
 		/**
@@ -98,7 +107,11 @@ public class AutonomousProgram {
 	}
 
 	public static Command constructSelectedRoutine() {
-		return autoChooser.getSelected().construct();
+		if(onTheFlyAutoStart.getBoolean(false)){
+			return 
+		} else {
+			return autoChooser.getSelected().construct();
+		}
 	}
 
 	public static double getAutonomousDelay() {

@@ -43,6 +43,8 @@ import com.pathplanner.lib.commands.PathPlannerAuto;
  * Note: Only the first command will finish the group
  */
 public class Autonomous {
+
+
     // This will load the file "FullAuto.path" and generate it with a max velocity
     // of 4 m/s and a max acceleration of 3 m/s^2
     // for every path in the group

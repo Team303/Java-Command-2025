@@ -1,5 +1,7 @@
 package frc.modules;
 
+import static frc.autonomous.AutonomousProgram.AUTO_TAB;
+
 // import static com.team303.robot.Robot.heldObject;
 
 import java.awt.Point;
@@ -42,6 +44,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 public class OperatorControlModule extends SubsystemBase {
     public static final ShuffleboardTab OPERATOR_TAB = Shuffleboard.getTab("Operator");
     public static final NetworkTable operator = NetworkTableInstance.getDefault().getTable("Operator");
+    public static final NetworkTable auto = NetworkTableInstance.getDefault().getTable("OperatorAutonomous");
 
     public static final String[] sideNames = { "A Side", "B Side", "C Side", "D Side", "E Side", "F Side", "G Side",
             "H Side", "I Side", "J Side", "K Side", "L Side" };
@@ -49,14 +52,23 @@ public class OperatorControlModule extends SubsystemBase {
     public static long[][] nodeStateValues = new long[12][4];
     public static long[][] nodeSuperStateValues = new long[12][4];
     public static long[][] integratedNodeValues = new long[12][4];
+
+    public static long[][] autoValues = new long[12][4];
+    public static ArrayList<Point> autoQueue = new ArrayList<>();
+    public static NetworkTableEntry autoQueueEntry = NetworkTableInstance.getDefault().getTable("OperatorAutonomous")
+            .getEntry("autoQueue");
     public static GenericEntry strategyEntry;
+    public static GenericEntry leftCoralSubstation;
+    public static GenericEntry rightCoralSubstation;
+    public static GenericEntry onTheFlyAutoStart;
 
     // public static boolean coopertitionBonusAchieved;
 
     public boolean queueManualOverride = false;
+
     // public boolean suggestManualOverride = false;
 
-    public Point hoverValue = new Point(0,0);
+    public Point hoverValue = new Point(0, 0);
     public Point queuedValue;
 
     public Timer timer = new Timer();
@@ -67,7 +79,8 @@ public class OperatorControlModule extends SubsystemBase {
             "Attempted to queue on already-filled node, queue not performed", AlertType.kWarning);
     private final Alert logCommandLoopOverrun = new Alert("Operator Terminal",
             "Command loop overrun", AlertType.kError);
-    private final Alert logNoMoreSpace = new Alert("Operator Terminal","No more space to place coral ;-;",AlertType.kWarning);
+    private final Alert logNoMoreSpace = new Alert("Operator Terminal", "No more space to place coral ;-;",
+            AlertType.kWarning);
 
     public static enum NodeState {
         NONE(0),
@@ -104,8 +117,14 @@ public class OperatorControlModule extends SubsystemBase {
         for (String s : sideNames) {
             OPERATOR_TAB.add(s, new ReefState(0, 0, 0, 0)).withWidget("ReefSelector").buildInto(operator, operator);
         }
+        for (String s : sideNames) {
+            OPERATOR_TAB.add("auto " + s, new ReefState(0, 0, 0, 0)).withWidget("ReefSelector").buildInto(auto, auto);
+        }
         currentStrategy = ScoreStrategy.MAX_POINTS;
         strategyEntry = OPERATOR_TAB.add("Current Strategy", "Error: No strategy set").getEntry();
+        leftCoralSubstation = OPERATOR_TAB.add("LCOR", false).withWidget("Toggle Button").getEntry();
+        rightCoralSubstation = OPERATOR_TAB.add("RCOR", false).withWidget("Toggle Button").getEntry();
+        onTheFlyAutoStart = OPERATOR_TAB.add("Start",false).withWidget("Toggle Button").getEntry();
     }
 
     public void moveUp() {
@@ -185,17 +204,74 @@ public class OperatorControlModule extends SubsystemBase {
 
     public void lockIn() {
         nodeSuperStateValues[queuedValue.x][queuedValue.y] = NodeSuperState.IN_PROGRESS.value;
+        return;
     }
 
     public void lockOut() {
         nodeSuperStateValues[queuedValue.x][queuedValue.y] = NodeSuperState.NONE.value;
         nodeStateValues[queuedValue.x][queuedValue.y] = NodeState.CORAL.value;
-        queuedValue=null;
+        queuedValue = null;
         autoHover();
     }
+
+    public void searchChange() {
+        for (int i = 0; i < 12; i++) {
+            long[] autoState = auto.getSubTable("auto " + sideNames[i]).getEntry("State")
+                    .getIntegerArray(new long[] { 0, 0, 0, 0 });
+            for (int j = 0; j < 4; j++) {
+                if (autoValues[i][j] == NodeState.NONE.value && autoState[j] == NodeState.CORAL.value) {
+                    autoQueue.add(new Point(i, j));
+                    autoValues[i][j] = NodeState.CORAL.value;
+                } else if (autoValues[i][j] == NodeState.CORAL.value && autoState[j] == NodeState.NONE.value) {
+                    for (int k = autoQueue.indexOf(new Point(i, j)); k < autoQueue.size(); k++) {
+                        Point cur = autoQueue.get(k);
+                        autoValues[cur.x][cur.y] = NodeState.NONE.value;
+                    }
+                    autoQueue = new ArrayList<Point>(autoQueue.subList(0, autoQueue.indexOf(new Point(i, j))));
+                    autoValues[i][j] = NodeState.NONE.value;
+                }
+            }
+        }
+        for (int i = 0; i < 12; i++) {
+            auto.getSubTable("auto " + sideNames[i]).getEntry("State").setIntegerArray(autoValues[i]);
+        }
+        if (leftCoralSubstation.getBoolean(false) && autoQueue.size() > 0
+                && !autoQueue.get(autoQueue.size() - 1).equals(new Point(12, 12))) {
+            autoQueue.add(new Point(12, 12));
+            leftCoralSubstation.setBoolean(false);
+        } else if (leftCoralSubstation.getBoolean(false) && autoQueue.size() == 0) {
+            autoQueue.add(new Point(12, 12));
+            leftCoralSubstation.setBoolean(false);
+        } else if (leftCoralSubstation.getBoolean(false)) {
+            autoQueue.remove(autoQueue.get(autoQueue.size() - 1));
+            leftCoralSubstation.setBoolean(false);
+        }
+        if (rightCoralSubstation.getBoolean(false) && autoQueue.size() > 0
+                && !autoQueue.get(autoQueue.size() - 1).equals(new Point(13, 13))) {
+            autoQueue.add(new Point(13, 13));
+            rightCoralSubstation.setBoolean(false);
+        } else if (rightCoralSubstation.getBoolean(false) && autoQueue.size() == 0) {
+            autoQueue.add(new Point(13, 13));
+            rightCoralSubstation.setBoolean(false);
+        } else if (rightCoralSubstation.getBoolean(false)) {
+            autoQueue.remove(autoQueue.get(autoQueue.size() - 1));
+            rightCoralSubstation.setBoolean(false);
+        }
+        String temp2 = "";
+        for (int i = 0; i < autoQueue.size(); i++) {
+            if (autoQueue.get(i).equals(new Point(12, 12))) {
+                temp2 = temp2 + "LCOR, ";
+            } else if (autoQueue.get(i).equals(new Point(13, 13))) {
+                temp2 = temp2 + "RCOR, ";
+            } else {
+                temp2 = temp2 + (char) ('A' + autoQueue.get(i).x) + (char) ('1' + autoQueue.get(i).y) + ", ";
+            }
+        }
+        autoQueueEntry.setString(temp2);
+    }
+
     public FieldPosition getQueuedPosition() {
-        System.out.println("yeee");
-        if(queuedValue==null) {
+        if (queuedValue == null) {
             return FieldPosition.CURRENT_POSE;
         }
         if (DriverStation.getAlliance().isPresent() && DriverStation.getAlliance().get() == Alliance.Blue) {
@@ -307,52 +383,55 @@ public class OperatorControlModule extends SubsystemBase {
 
     public void autoHover() {
         // if (queueManualOverride) {
-        //     return;
+        // return;
         // }
-        if(hoverValue!=null){
-            nodeSuperStateValues[hoverValue.x][hoverValue.y] = NodeSuperState.NONE.value;            
+        if (hoverValue != null) {
+            nodeSuperStateValues[hoverValue.x][hoverValue.y] = NodeSuperState.NONE.value;
         }
         // if (queuedValue != null) {
-        //     nodeSuperStateValues[queuedValue.x][queuedValue.y] = NodeSuperState.NONE.value;
+        // nodeSuperStateValues[queuedValue.x][queuedValue.y] =
+        // NodeSuperState.NONE.value;
         // }
 
         // get current pose
         // find distance between curpose and all scoring poses
         // sort by distance to scoring pose
         Pose2d currentPose = Robot.swerve.getPose();
-        ArrayList<Pair<Double,FieldPosition>> ordered_set = new ArrayList<>();
-        for (ReefPosition position : ReefPosition.values()){
+        ArrayList<Pair<Double, FieldPosition>> ordered_set = new ArrayList<>();
+        for (ReefPosition position : ReefPosition.values()) {
             FieldPosition converted = FieldPosition.valueOf(position.name());
-            //only use reefpositions of current alliance
-            if(DriverStation.getAlliance().isPresent() && DriverStation.getAlliance().get() == Alliance.Blue && converted.name().substring(0,3).equals("RED")) {
+            // only use reefpositions of current alliance
+            if (DriverStation.getAlliance().isPresent() && DriverStation.getAlliance().get() == Alliance.Blue
+                    && converted.name().substring(0, 3).equals("RED")) {
                 continue;
-            } else if (DriverStation.getAlliance().isPresent() && DriverStation.getAlliance().get() == Alliance.Red && converted.name().substring(0,4).equals("BLUE")) {
+            } else if (DriverStation.getAlliance().isPresent() && DriverStation.getAlliance().get() == Alliance.Red
+                    && converted.name().substring(0, 4).equals("BLUE")) {
                 continue;
-            } else if(!DriverStation.getAlliance().isPresent() && converted.name().substring(0,4).equals("BLUE")) {
+            } else if (!DriverStation.getAlliance().isPresent() && converted.name().substring(0, 4).equals("BLUE")) {
                 continue;
             }
-            ordered_set.add(new Pair<Double,FieldPosition>(currentPose.getTranslation().getDistance(Robot.swerve.calculateFieldPosition(converted).getTranslation()),converted));
+            ordered_set.add(new Pair<Double, FieldPosition>(currentPose.getTranslation()
+                    .getDistance(Robot.swerve.calculateFieldPosition(converted).getTranslation()), converted));
         }
-        Collections.sort(ordered_set,new Comparator<Pair<Double,FieldPosition>>(){
+        Collections.sort(ordered_set, new Comparator<Pair<Double, FieldPosition>>() {
 
-            public int compare(Pair<Double,FieldPosition> o1, Pair<Double,FieldPosition> o2)
-            {
-               return o1.getFirst().compareTo(o2.getFirst());
+            public int compare(Pair<Double, FieldPosition> o1, Pair<Double, FieldPosition> o2) {
+                return o1.getFirst().compareTo(o2.getFirst());
             }
-          });
+        });
         if (currentStrategy == ScoreStrategy.MAX_POINTS) {
-            //MAX_POINTS strategy
+            // MAX_POINTS strategy
             // check all l4's, then l3's, then l2's, then l1's
-            for(int i=3;i>=0;i--){
-                for (int j=0;j<ordered_set.size();j++){
+            for (int i = 3; i >= 0; i--) {
+                for (int j = 0; j < ordered_set.size(); j++) {
                     String side = ordered_set.get(j).getSecond().name();
-                    if(nodeStateValues[side.charAt(side.length()-1)-65][i] == NodeState.NONE.value){
-                        if(hoverValue!=null) {
-                            nodeSuperStateValues[hoverValue.x][hoverValue.y]=NodeSuperState.NONE.value;
+                    if (nodeStateValues[side.charAt(side.length() - 1) - 65][i] == NodeState.NONE.value) {
+                        if (hoverValue != null) {
+                            nodeSuperStateValues[hoverValue.x][hoverValue.y] = NodeSuperState.NONE.value;
                         }
-                        hoverValue.x=side.charAt(side.length()-1)-65;
-                        hoverValue.y=i;
-                        nodeSuperStateValues[hoverValue.x][hoverValue.y]=NodeSuperState.HOVER.value;
+                        hoverValue.x = side.charAt(side.length() - 1) - 65;
+                        hoverValue.y = i;
+                        nodeSuperStateValues[hoverValue.x][hoverValue.y] = NodeSuperState.HOVER.value;
                         return;
                     }
                 }
@@ -360,18 +439,18 @@ public class OperatorControlModule extends SubsystemBase {
             logNoMoreSpace.set(true);
             return;
         } else {
-            //MIN_TIME strategy
+            // MIN_TIME strategy
             // check all of closest side, then next closest side etc.
-            for(int j=0;j<ordered_set.size();j++){
-                for (int i=3;i>=0;i--){
+            for (int j = 0; j < ordered_set.size(); j++) {
+                for (int i = 3; i >= 0; i--) {
                     String side = ordered_set.get(j).getSecond().name();
-                    if(nodeStateValues[side.charAt(side.length()-1)-65][i] == NodeState.NONE.value){
-                        if(hoverValue!=null) {
-                            nodeSuperStateValues[hoverValue.x][hoverValue.y]=NodeSuperState.NONE.value;
+                    if (nodeStateValues[side.charAt(side.length() - 1) - 65][i] == NodeState.NONE.value) {
+                        if (hoverValue != null) {
+                            nodeSuperStateValues[hoverValue.x][hoverValue.y] = NodeSuperState.NONE.value;
                         }
-                        hoverValue.x=side.charAt(side.length()-1)-65;
-                        hoverValue.y=i;
-                        nodeSuperStateValues[hoverValue.x][hoverValue.y]=NodeSuperState.HOVER.value;
+                        hoverValue.x = side.charAt(side.length() - 1) - 65;
+                        hoverValue.y = i;
+                        nodeSuperStateValues[hoverValue.x][hoverValue.y] = NodeSuperState.HOVER.value;
                         return;
                     }
                 }
@@ -384,11 +463,13 @@ public class OperatorControlModule extends SubsystemBase {
     @Override
     public void periodic() {
         timer.start();
-        if(hoverValue == null) {
+        if (hoverValue == null) {
             autoHover();
         }
-        if((DriverStation.isFMSAttached() || (!DriverStation.isAutonomous() && !DriverStation.isTeleop() && !DriverStation.isTest()))&&DriverStation.getMatchTime()<30){
-            if(currentStrategy == ScoreStrategy.MAX_POINTS) {
+        if ((DriverStation.isFMSAttached()
+                || (!DriverStation.isAutonomous() && !DriverStation.isTeleop() && !DriverStation.isTest()))
+                && DriverStation.getMatchTime() < 30) {
+            if (currentStrategy == ScoreStrategy.MAX_POINTS) {
                 currentStrategy = ScoreStrategy.MIN_TIME;
             }
         }
