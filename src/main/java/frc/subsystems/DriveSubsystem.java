@@ -81,10 +81,10 @@ public class DriveSubsystem extends SubsystemBase {
   public static final double kMaxSpeed = 5.2 * 4; // 5.2 meters per second
   public static final double kMaxAngularSpeed = kMaxSpeed / (Math.hypot(0.381, 0.381)); // radians per second
 
-  private final Translation2d frontLeftLocation = new Translation2d(0.32, 0.32);
-  private final Translation2d frontRightLocation = new Translation2d(0.32, -0.32);
-  private final Translation2d backLeftLocation = new Translation2d(-0.32, 0.32);
-  private final Translation2d backRightLocation = new Translation2d(-0.32, -0.32);
+  private final Translation2d frontLeftLocation = new Translation2d(Units.inchesToMeters(24.5/2.0), Units.inchesToMeters(24.0));
+  private final Translation2d frontRightLocation = new Translation2d(Units.inchesToMeters(24.5/2.0), -Units.inchesToMeters(24.0));
+  private final Translation2d backLeftLocation = new Translation2d(-Units.inchesToMeters(24.5/2.0), Units.inchesToMeters(24.0));
+  private final Translation2d backRightLocation = new Translation2d(-Units.inchesToMeters(24.5/2.0), -Units.inchesToMeters(24.0));
 
   public final SwerveModule frontLeft;
   public final SwerveModule frontRight;
