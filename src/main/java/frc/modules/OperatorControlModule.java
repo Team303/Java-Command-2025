@@ -203,11 +203,18 @@ public class OperatorControlModule extends SubsystemBase {
     }
 
     public void lockIn() {
+        if (queuedValue == null) {
+            System.out.println("\nNEED TO SELECT A NODE FIRST\nNEED TO SELECT A NODE FIRST\nNEED TO SELECT A NODE FIRST\nNEED TO SELECT A NODE FIRST\nNEED TO SELECT A NODE FIRST\nNEED TO SELECT A NODE FIRST\nNEED TO SELECT A NODE FIRST\nNEED TO SELECT A NODE FIRST\nNEED TO SELECT A NODE FIRST\nNEED TO SELECT A NODE FIRST\nNEED TO SELECT A NODE FIRST");
+            return;
+        }
         nodeSuperStateValues[queuedValue.x][queuedValue.y] = NodeSuperState.IN_PROGRESS.value;
-        return;
     }
 
     public void lockOut() {
+        if (queuedValue == null) {
+            System.out.println("\nNEED TO SELECT A NODE FIRST\nNEED TO SELECT A NODE FIRST\nNEED TO SELECT A NODE FIRST\nNEED TO SELECT A NODE FIRST\nNEED TO SELECT A NODE FIRST\nNEED TO SELECT A NODE FIRST\nNEED TO SELECT A NODE FIRST\nNEED TO SELECT A NODE FIRST\nNEED TO SELECT A NODE FIRST\nNEED TO SELECT A NODE FIRST\nNEED TO SELECT A NODE FIRST");
+            return;
+        }
         nodeSuperStateValues[queuedValue.x][queuedValue.y] = NodeSuperState.NONE.value;
         nodeStateValues[queuedValue.x][queuedValue.y] = NodeState.CORAL.value;
         queuedValue = null;
@@ -271,10 +278,13 @@ public class OperatorControlModule extends SubsystemBase {
     }
 
     public FieldPosition getQueuedPosition() {
+        System.out.println("Finding Position...Finding Position...Finding Position...Finding Position...Finding Position...Finding Position...Finding Position...Finding Position...");
         if (queuedValue == null) {
+            System.out.println("\nnull\nnull\nnull\nnull\nnull\nnull\nnull\nnull\null");
             return FieldPosition.CURRENT_POSE;
         }
         if (DriverStation.getAlliance().isPresent() && DriverStation.getAlliance().get() == Alliance.Blue) {
+            System.out.println("\nBLUE\nBLUE\nBLUE\nBLUE\nBLUE\nBLUE\nBLUE\nBLUE\nBLUE --> " + queuedValue.x);
             switch (queuedValue.x) {
                 case 0:
                     return FieldPosition.BLUE_REEF_A;
@@ -305,6 +315,8 @@ public class OperatorControlModule extends SubsystemBase {
                     return FieldPosition.CURRENT_POSE;
             }
         } else {
+            System.out.println("\nRED\nRED\nRED\nRED\nRED\nRED\nRED\nRED\nRED --> " + queuedValue.x);
+
             switch (queuedValue.x) {
                 case 0:
                     return FieldPosition.RED_REEF_A;
@@ -335,6 +347,7 @@ public class OperatorControlModule extends SubsystemBase {
                     return FieldPosition.CURRENT_POSE;
             }
         }
+       // return FieldPosition.CURRENT_POSE;
     }
 
     public void setPiece() {

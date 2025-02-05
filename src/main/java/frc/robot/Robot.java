@@ -56,6 +56,7 @@ public class Robot extends LoggedRobot {
 	public static PhotonvisionModule photonvision;
 	public static DriveSubsystem swerve;
 	public static OperatorControlModule operatorControl;
+
 	// public static Logger logger;
 
 	public static enum FieldPosition {
@@ -120,12 +121,18 @@ public class Robot extends LoggedRobot {
 		BLUE_REEF_L,
 	}
 
+	public FieldPosition position;
+	public Command path;
+
+
 	@Override
 	public void robotInit() {
 		photonvision = new PhotonvisionModule();
 		swerve = new DriveSubsystem();
 		// swerve = new SSubsystem();
 		operatorControl = new OperatorControlModule();
+		position = FieldPosition.CURRENT_POSE;
+		path=Commands.none();
 		//Subsystem initialization goes here
 		swerve.resetOdometry();
 		NamedCommands.registerCommand("Auto Align 9", new SequentialCommandGroup(
@@ -222,16 +229,18 @@ public class Robot extends LoggedRobot {
 		//TODO: Add scoring routine into start button
 		//TODO: Add scoring routine into start button
 		// driverController.start().onTrue(Commands.runOnce(() -> operatorControl.lockIn()).andThen(swerve.pathfindthenFollowPath(FieldPosition.RED_REEF_A), Commands.runOnce(() -> operatorControl.lockOut())));
-		driverController.start().toggleOnTrue(new SequentialCommandGroup(Commands.runOnce(() -> operatorControl.lockIn()),Commands.runOnce(()->swerve.pathfindthenFollowPath(operatorControl.getQueuedPosition()).addRequirements(swerve)),Commands.runOnce(() -> operatorControl.lockOut())));
+		driverController.start().toggleOnTrue(new SequentialCommandGroup(Commands.runOnce(() -> operatorControl.lockIn()),Commands.runOnce(()->swerve.pathfindthenFollowPath(operatorControl.getQueuedPosition()).addRequirements(swerve,operatorControl)),Commands.runOnce(() -> operatorControl.lockOut())));
 		// driverController.start().toggleOnTrue(new SequentialCommandGroup(Commands.runOnce(() -> System.out.println("1")),Commands.runOnce(() -> System.out.println("2")),Commands.runOnce(() -> System.out.println("3"))));
 			// Commands.runOnce(() -> operatorControl.lockIn()).andThen(swerve.pathfindthenFollowPath(FieldPosition.RED_REEF_A), Commands.runOnce(() -> operatorControl.lockOut())));
 		// driverController.start().onTrue((Commands.runOnce(() -> operatorControl.lockIn()).andThen(() -> System.out.println("woah")).andThen(() -> operatorControl.lockOut())).unless(() -> operatorControl.queuedValue == null));
 
+
 		// driverController.a().toggleOnTrue(new TurnToAngle(0).repeatedly());
 
-		driverController.a().onTrue(new AutoAlign(FieldPosition.RED_REEF_E));
-		// driverController.x().onTrue(swerve.pathfindthenFollowPath(FieldPosition.RED_REEF_I));
-		// driverController.b().onTrue(swerve.pathfindthenFollowPath(FieldPosition.RED_REEF_E));
+		//driverController.a().onTrue(new AutoAlign(FieldPosition.RED_REEF_E));
+		driverController.a().onTrue(Commands.runOnce(() -> System.out.println("HELLOOOOOOOOO --> " + operatorControl.getQueuedPosition())));
+		driverController.b().onTrue(swerve.pathfindthenFollowPath(FieldPosition.RED_REEF_E));
+		driverController.x().onTrue(Commands.runOnce(() -> position=operatorControl.getQueuedPosition()).andThen(() -> path=swerve.pathfindthenFollowPath(position)).andThen(path));
 
 		//Game-specific Button Bindings go here
 

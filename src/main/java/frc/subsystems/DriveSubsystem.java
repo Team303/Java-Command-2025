@@ -71,6 +71,8 @@ import frc.robot.Robot.FieldPosition;
 import frc.robot.RobotMap.PhotonvisionConstants;
 import frc.robot.RobotMap.Swerve;
 
+import static frc.robot.Robot.operatorControl;
+
 /** Represents a swerve drive style drivetrain. */
 public class DriveSubsystem extends SubsystemBase {
 
@@ -515,9 +517,17 @@ public class DriveSubsystem extends SubsystemBase {
   }
 
   public Command pathfindthenFollowPath(FieldPosition position){
-    if(position==FieldPosition.CURRENT_POSE) return Commands.none();
+    System.out.println("hi");
+    System.out.println("Selected Position: " + position.name());
     PathConstraints constraints = new PathConstraints(3.0, 3.0, 2 * Math.PI, 4 * Math.PI); // The constraints for this
-    return AutoBuilder.pathfindThenFollowPath(pathFromFile(position.name()), constraints);
+    if (position.name().equals("CURRENT_POSE")) {
+      System.out.println("THERE IS NO NODE SELECTED\nTHERE IS NO NODE SELECTED\nTHERE IS NO NODE SELECTED\nTHERE IS NO NODE SELECTED\n");
+      return Commands.none();
+      //  AutoBuilder.pathfindThenFollowPath(pathFromFile(FieldPosition.RED_REEF_C.name()), constraints);
+    } else {
+      System.out.println("YES\nYES\nYES\nYES\nYES");
+      return AutoBuilder.pathfindThenFollowPath(pathFromFile(position.name()), constraints);
+    }
   }
 
   // /** Updates the field relative position of the robot. */

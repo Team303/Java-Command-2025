@@ -108,7 +108,7 @@ public class AutonomousProgram {
 
 	public static Command constructSelectedRoutine() {
 		if(onTheFlyAutoStart.getBoolean(false)){
-			return 
+			return autoChooser.getSelected().construct();
 		} else {
 			return autoChooser.getSelected().construct();
 		}
