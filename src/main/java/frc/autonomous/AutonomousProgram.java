@@ -11,8 +11,14 @@ import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import frc.robot.Robot.FieldPosition;
 import frc.robot.util.ReefState;
-import static frc.modules.OperatorControlModule.onTheFlyAutoStart;;
+import static frc.robot.Robot.swerve;
+import static frc.robot.Robot.operatorControl;
+import static frc.modules.OperatorControlModule.onTheFlyAutoStart;
+import static frc.modules.OperatorControlModule.autoQueue;
 
 public class AutonomousProgram {
 
@@ -20,7 +26,6 @@ public class AutonomousProgram {
 	public static final ShuffleboardTab AUTO_TAB = Shuffleboard.getTab("Autonomous");
 	public static SendableChooser<AutonomousProgram> autoChooser = new SendableChooser<>();
 	public static SendableChooser<Double> autoDelayChooser = new SendableChooser<>();
-	public static ArrayList<Point> autoQueue;
 	public static long[][] nodeStateValues = new long[12][4];
 
 
@@ -108,7 +113,13 @@ public class AutonomousProgram {
 
 	public static Command constructSelectedRoutine() {
 		if(onTheFlyAutoStart.getBoolean(false)){
-			return autoChooser.getSelected().construct();
+			Command[] commandArray = new Command[autoQueue.size()];
+			for(int i=0;i<autoQueue.size();i++) {
+				FieldPosition position = operatorControl.getQueuedPosition(autoQueue.get(i).x);
+				commandArray[i] = Commands.runOnce(() -> swerve.pathfindthenFollowPath(position).addRequirements(swerve));
+			}
+			Command ret = new SequentialCommandGroup(commandArray);
+			return ret;
 		} else {
 			return autoChooser.getSelected().construct();
 		}

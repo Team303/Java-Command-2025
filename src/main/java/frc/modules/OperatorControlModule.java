@@ -232,7 +232,9 @@ public class OperatorControlModule extends SubsystemBase {
                 } else if (autoValues[i][j] == NodeState.CORAL.value && autoState[j] == NodeState.NONE.value) {
                     for (int k = autoQueue.indexOf(new Point(i, j)); k < autoQueue.size(); k++) {
                         Point cur = autoQueue.get(k);
-                        autoValues[cur.x][cur.y] = NodeState.NONE.value;
+                        if(cur.x<12){
+                            autoValues[cur.x][cur.y] = NodeState.NONE.value;
+                        }
                     }
                     autoQueue = new ArrayList<Point>(autoQueue.subList(0, autoQueue.indexOf(new Point(i, j))));
                     autoValues[i][j] = NodeState.NONE.value;
@@ -278,14 +280,16 @@ public class OperatorControlModule extends SubsystemBase {
     }
 
     public FieldPosition getQueuedPosition() {
-        System.out.println("Finding Position...Finding Position...Finding Position...Finding Position...Finding Position...Finding Position...Finding Position...Finding Position...");
-        if (queuedValue == null) {
-            System.out.println("\nnull\nnull\nnull\nnull\nnull\nnull\nnull\nnull\null");
+        if(queuedValue==null) {
+            System.out.println("adsfasdfadfa");
             return FieldPosition.CURRENT_POSE;
         }
+        return getQueuedPosition(queuedValue.x);
+    }
+
+    public FieldPosition getQueuedPosition(int num) {
         if (DriverStation.getAlliance().isPresent() && DriverStation.getAlliance().get() == Alliance.Blue) {
-            System.out.println("\nBLUE\nBLUE\nBLUE\nBLUE\nBLUE\nBLUE\nBLUE\nBLUE\nBLUE --> " + queuedValue.x);
-            switch (queuedValue.x) {
+            switch (num) {
                 case 0:
                     return FieldPosition.BLUE_REEF_A;
                 case 1:
@@ -310,14 +314,16 @@ public class OperatorControlModule extends SubsystemBase {
                     return FieldPosition.BLUE_REEF_K;
                 case 11:
                     return FieldPosition.BLUE_REEF_L;
+                case 12:
+                    return FieldPosition.BLUE_LEFT_CORALSUBSTATION;
+                case 13:
+                    return FieldPosition.BLUE_RIGHT_CORALSUBSTATION;
                 default:
-                    System.out.println("getQueuedPosition() somehow returned value <=0 or >=12");
+                    System.out.println("getQueuedPosition() somehow returned value <=0 or >=14");
                     return FieldPosition.CURRENT_POSE;
             }
         } else {
-            System.out.println("\nRED\nRED\nRED\nRED\nRED\nRED\nRED\nRED\nRED --> " + queuedValue.x);
-
-            switch (queuedValue.x) {
+            switch (num) {
                 case 0:
                     return FieldPosition.RED_REEF_A;
                 case 1:
@@ -342,8 +348,12 @@ public class OperatorControlModule extends SubsystemBase {
                     return FieldPosition.RED_REEF_K;
                 case 11:
                     return FieldPosition.RED_REEF_L;
+                case 12:
+                    return FieldPosition.RED_LEFT_CORALSUBSTATION;
+                case 13:
+                    return FieldPosition.RED_RIGHT_CORALSUBSTATION;
                 default:
-                    System.out.println("getQueuedPosition() somehow returned value <=0 or >=12");
+                    System.out.println("getQueuedPosition() somehow returned value <=0 or >=14");
                     return FieldPosition.CURRENT_POSE;
             }
         }
