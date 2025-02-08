@@ -21,6 +21,7 @@ import com.kauailabs.navx.frc.AHRS;
 import com.pathplanner.lib.auto.NamedCommands;
 import com.pathplanner.lib.pathfinding.Pathfinding;
 
+import au.grapplerobotics.CanBridge;
 import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Joystick;
@@ -42,11 +43,14 @@ import org.littletonrobotics.junction.wpilog.WPILOGWriter;
 import frc.commands.drive.DefaultDrive;
 import frc.commands.drive.DriveWait;
 import frc.commands.drive.TurnToAngle;
+import frc.commands.endeffector.IntakeCoral;
+import frc.commands.endeffector.ShootCoral;
 import frc.modules.OperatorControlModule;
 import frc.modules.PhotonvisionModule;
 import frc.robot.util.LocalADStarAK;
 // import frc.commands.drive.TurnToSpeaker;
 import frc.subsystems.DriveSubsystem;
+import frc.subsystems.EndEffectorSubsystem;
 
 
 public class Robot extends LoggedRobot {
@@ -60,6 +64,7 @@ public class Robot extends LoggedRobot {
 	public static final AHRS navX = new AHRS();
 	public static PhotonvisionModule photonvision;
 	public static DriveSubsystem swerve;
+	public static EndEffectorSubsystem endEffector;
 	public static OperatorControlModule operatorControl;
 
 	public static HashSet<Subsystem> getQueuedPositionRequirements;
@@ -136,11 +141,13 @@ public class Robot extends LoggedRobot {
 	public void robotInit() {
 		photonvision = new PhotonvisionModule();
 		swerve = new DriveSubsystem();
+		endEffector = new EndEffectorSubsystem();
 		// swerve = new SSubsystem();
 		operatorControl = new OperatorControlModule();
 		getQueuedPositionRequirements = new HashSet<Subsystem>();
 		getQueuedPositionRequirements.add(swerve);
 		getQueuedPositionRequirements.add(operatorControl);
+		CanBridge.runTCP();
 		//Subsystem initialization goes here
 		swerve.resetOdometry();
 		NamedCommands.registerCommand("Auto Align 9", new SequentialCommandGroup(
@@ -246,12 +253,14 @@ public class Robot extends LoggedRobot {
 		// driverController.a().toggleOnTrue(new TurnToAngle(0).repeatedly());
 
 		//driverController.a().onTrue(new AutoAlign(FieldPosition.RED_REEF_E));
-		driverController.a().onTrue(Commands.runOnce(() -> System.out.println("HELLOOOOOOOOO --> " + operatorControl.getQueuedPosition())));
-		driverController.b().onTrue(swerve.pathfindthenFollowPath(FieldPosition.RED_REEF_E));
+		//driverController.a().onTrue(Commands.runOnce(() -> System.out.println("HELLOOOOOOOOO --> " + operatorControl.getQueuedPosition())));
+		//driverController.b().onTrue(swerve.pathfindthenFollowPath(FieldPosition.RED_REEF_E));
 		// driverController.x().onTrue();
 
 		//Game-specific Button Bindings go here
-
+		operatorController.a().onTrue(new IntakeCoral());
+		operatorController.b().onTrue(new ShootCoral(1));
+		operatorController.x().onTrue(new ShootCoral(2));
 
 	}
 
