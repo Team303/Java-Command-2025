@@ -689,7 +689,7 @@ public class DriveSubsystem extends SubsystemBase {
     boolean isBlue = true;
 
     // depending on which alliance, set which global direction to zero to (0 or 180)
-    // BLUE ORIGIN
+    // BLUE ORIGINg
 
     var alliance = DriverStation.getAlliance();
     if (alliance.isPresent()) {
