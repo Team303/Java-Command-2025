@@ -73,8 +73,14 @@ public class RobotMap {
 
 	}
 	//Subteam-specific constants go here
- 
-	
+
+	public static final class EndEffector {
+		public static int LEFT_END_EFFECTOR_MOTOR_ID = 12; //Need to change
+		public static int RIGHT_END_EFFECTOR_MOTOR_ID = 13; //Need to change
+		public static int FIRST_LC_ID = 0;
+		public static int SECOND_LC_ID = 1;
+	}
+
 
 	//Field-specific constants go here
 	//TODO: Change field-specific constants
