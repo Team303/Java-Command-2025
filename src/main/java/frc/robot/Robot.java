@@ -246,8 +246,8 @@ public class Robot extends LoggedRobot {
 		// driverController.a().toggleOnTrue(new TurnToAngle(0).repeatedly());
 
 		//driverController.a().onTrue(new AutoAlign(FieldPosition.RED_REEF_E));
-		driverController.a().onTrue(Commands.runOnce(() -> System.out.println("HELLOOOOOOOOO --> " + operatorControl.getQueuedPosition())));
-		driverController.b().onTrue(swerve.pathfindthenFollowPath(FieldPosition.RED_REEF_E));
+		//driverController.a().onTrue(Commands.runOnce(() -> System.out.println("HELLOOOOOOOOO --> " + operatorControl.getQueuedPosition())));
+		//driverController.b().onTrue(swerve.pathfindthenFollowPath(FieldPosition.RED_REEF_E));
 		// driverController.x().onTrue();
 
 		//Game-specific Button Bindings go here
