@@ -485,7 +485,7 @@ public class OperatorControlModule extends SubsystemBase {
 
     @Override
     public void periodic() {
-        timer.start();
+        timer.restart();
         if (hoverValue == null) {
             autoHover();
         }

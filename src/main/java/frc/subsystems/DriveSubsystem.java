@@ -40,6 +40,7 @@ import edu.wpi.first.math.Vector;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
@@ -54,6 +55,7 @@ import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.Alert.AlertType;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
@@ -70,6 +72,7 @@ import frc.robot.RobotMap;
 import frc.robot.Robot.FieldPosition;
 import frc.robot.RobotMap.PhotonvisionConstants;
 import frc.robot.RobotMap.Swerve;
+import edu.wpi.first.wpilibj.Alert;
 
 import static frc.robot.Robot.operatorControl;
 
@@ -81,10 +84,14 @@ public class DriveSubsystem extends SubsystemBase {
   public static final double kMaxSpeed = 5.2 * 4; // 5.2 meters per second
   public static final double kMaxAngularSpeed = kMaxSpeed / (Math.hypot(0.381, 0.381)); // radians per second
 
-  private final Translation2d frontLeftLocation = new Translation2d(Units.inchesToMeters(24.5/2.0), Units.inchesToMeters(24.0));
-  private final Translation2d frontRightLocation = new Translation2d(Units.inchesToMeters(24.5/2.0), -Units.inchesToMeters(24.0));
-  private final Translation2d backLeftLocation = new Translation2d(-Units.inchesToMeters(24.5/2.0), Units.inchesToMeters(24.0));
-  private final Translation2d backRightLocation = new Translation2d(-Units.inchesToMeters(24.5/2.0), -Units.inchesToMeters(24.0));
+  private final Translation2d frontLeftLocation = new Translation2d(Units.inchesToMeters(24.5 / 2.0),
+      Units.inchesToMeters(24.0));
+  private final Translation2d frontRightLocation = new Translation2d(Units.inchesToMeters(24.5 / 2.0),
+      -Units.inchesToMeters(24.0));
+  private final Translation2d backLeftLocation = new Translation2d(-Units.inchesToMeters(24.5 / 2.0),
+      Units.inchesToMeters(24.0));
+  private final Translation2d backRightLocation = new Translation2d(-Units.inchesToMeters(24.5 / 2.0),
+      -Units.inchesToMeters(24.0));
 
   public final SwerveModule frontLeft;
   public final SwerveModule frontRight;
@@ -159,6 +166,15 @@ public class DriveSubsystem extends SubsystemBase {
   public static final GenericEntry angleToSpeaker = DRIVEBASE_TAB.add("angleToSpeaker", 0).withPosition(3, 4)
       .getEntry();
 
+  private final Alert logFrontLeftVisionJittery = new Alert("Operator Terminal",
+      "Front left vision jittery, pose not taken", AlertType.kWarning);
+  private final Alert logFrontRightVisionJittery = new Alert("Operator Terminal",
+      "Front right vision jittery, pose not taken", AlertType.kWarning);
+  private final Alert logFrontLeftOOB = new Alert("Operator Terminal",
+      "Front left vision out of bounds, pose not taken", AlertType.kWarning);
+  private final Alert logFrontRightOOB = new Alert("Operator Terminal",
+      "Front right vision out of bounds, pose not taken", AlertType.kWarning);
+
   public static double angularVelocity = 0;
 
   private double m_desiredHeading = 0;
@@ -185,6 +201,9 @@ public class DriveSubsystem extends SubsystemBase {
   public CANcoderConfiguration configRightBack;
 
   public SwerveDrivePoseEstimator poseEstimator;
+
+  EstimatedRobotPose frontLeftVisionPose;
+  EstimatedRobotPose frontRightVisionPose;
 
   public DriveSubsystem() {
 
@@ -516,14 +535,12 @@ public class DriveSubsystem extends SubsystemBase {
     return AutoBuilder.pathfindToPose(targetPose, constraints, 0.0);
   }
 
-  public Command pathfindthenFollowPath(FieldPosition position){
-    System.out.println("hi");
-    System.out.println("Selected Position: " + position.name());
+  public Command pathfindthenFollowPath(FieldPosition position) {
     PathConstraints constraints = new PathConstraints(3.0, 3.0, 2 * Math.PI, 4 * Math.PI); // The constraints for this
     if (position.name().equals("CURRENT_POSE")) {
-      System.out.println("THERE IS NO NODE SELECTED\nTHERE IS NO NODE SELECTED\nTHERE IS NO NODE SELECTED\nTHERE IS NO NODE SELECTED\n");
+      System.out.println(
+          "THERE IS NO NODE SELECTED\nTHERE IS NO NODE SELECTED\nTHERE IS NO NODE SELECTED\nTHERE IS NO NODE SELECTED\n");
       return Commands.none();
-      //  AutoBuilder.pathfindThenFollowPath(pathFromFile(FieldPosition.RED_REEF_C.name()), constraints);
     } else {
       System.out.println("YES\nYES\nYES\nYES\nYES");
       return AutoBuilder.pathfindThenFollowPath(pathFromFile(position.name()), constraints);
@@ -536,53 +553,50 @@ public class DriveSubsystem extends SubsystemBase {
         CameraName.FRONT_LEFT);
     Optional<EstimatedRobotPose> resultFrontRight = getEstimatedGlobalPose(poseEstimator.getEstimatedPosition(),
         CameraName.FRONT_RIGHT);
-    // poseEstimator.update(Robot.navX.getRotation2d(), getModulePositions());
 
-    // Optional<EstimatedRobotPose> resultRight =
-    // getEstimatedGlobalPoseRight(poseEstimator.getEstimatedPosition());
-    // Optional<EstimatedRobotPose> resultLeft =
-    // getEstimatedGlobalPoseLeft(poseEstimator.getEstimatedPosition());
     // int cameraCount=0;
     if (resultFrontLeft.isPresent()) {
       EstimatedRobotPose visionPoseEstimate = resultFrontLeft.get();
-      Vector<N3> stddevs = getEstimationStdDevs(visionPoseEstimate.targetsUsed);
-      double[] data = stddevs.getData();
-      // for (int i = 0; i < data.length; i++) {
-      // // System.out.println(i+" "+data[i]);
-      // }
-      Logger.recordOutput("frontLeftVisionPose", visionPoseEstimate.estimatedPose);
-      poseEstimator.addVisionMeasurement(visionPoseEstimate.estimatedPose.toPose2d(),
-          visionPoseEstimate.timestampSeconds,
-          stddevs);
+      Pose3d estPose = visionPoseEstimate.estimatedPose;
+      if (poseInBounds(estPose.getX(), estPose.getY())) {
+        logFrontLeftOOB.set(false);
+        if (!visionJittery(frontLeftVisionPose, visionPoseEstimate)) {
+          logFrontLeftVisionJittery.set(false);
+          frontLeftVisionPose=visionPoseEstimate;
+          Vector<N3> stddevs = getEstimationStdDevs(visionPoseEstimate.targetsUsed);
+          // double[] data = stddevs.getData();
+          poseEstimator.addVisionMeasurement(visionPoseEstimate.estimatedPose.toPose2d(),
+              visionPoseEstimate.timestampSeconds,
+              stddevs);
+        } else {
+          logFrontLeftVisionJittery.set(true);
+        }
+      } else {
+        logFrontLeftOOB.set(true);
+      }
       // cameraCount++;
     }
-    // if (resultFrontRight.isPresent()) {
-    // EstimatedRobotPose visionPoseEstimate = resultRight.get();
-
-    // poseEstimator.addVisionMeasurement(visionPoseEstimate.estimatedPose.toPose2d(),
-    // visionPoseEstimate.timestampSeconds);
-    // }
-    // Logger.recordOutput("Camera",cameraCount);
-    // if(!(DriverStation.isAutonomous())){
     if (resultFrontRight.isPresent()) {
       EstimatedRobotPose visionPoseEstimate = resultFrontRight.get();
-      Vector<N3> stddevs = getEstimationStdDevs(visionPoseEstimate.targetsUsed);
-      double[] data = stddevs.getData();
-      // for (int i = 0; i < data.length; i++) {
-      // // System.out.println(i+" "+data[i]);
-      // }
-      Logger.recordOutput("frontRightVisionPose", visionPoseEstimate.estimatedPose);
-      poseEstimator.addVisionMeasurement(visionPoseEstimate.estimatedPose.toPose2d(),
-          visionPoseEstimate.timestampSeconds,
-          stddevs);
+      Pose3d estPose = visionPoseEstimate.estimatedPose;
+      if (poseInBounds(estPose.getX(), estPose.getY())) {
+        logFrontRightOOB.set(false);
+        if (!visionJittery(frontRightVisionPose, visionPoseEstimate)) {
+          logFrontRightVisionJittery.set(false);
+          frontRightVisionPose=visionPoseEstimate;
+          Vector<N3> stddevs = getEstimationStdDevs(visionPoseEstimate.targetsUsed);
+          // double[] data = stddevs.getData();
+          poseEstimator.addVisionMeasurement(visionPoseEstimate.estimatedPose.toPose2d(),
+              visionPoseEstimate.timestampSeconds,
+              stddevs);
+        } else {
+          logFrontRightVisionJittery.set(true);
+        }
+      } else {
+        logFrontRightOOB.set(true);
+      }
+      // cameraCount++;
     }
-    // }
-    // if (resultLeft.isPresent()) {
-
-    // EstimatedRobotPose visionPoseEstimate = resultLeft.get();
-    // poseEstimator.addVisionMeasurement(visionPoseEstimate.estimatedPose.toPose2d(),
-    // visionPoseEstimate.timestampSeconds);
-    // }
 
     poseEstimator.update(Robot.navX.getRotation2d().times(-1), getModulePositions());
     field2d.setRobotPose(getPose());
@@ -599,6 +613,22 @@ public class DriveSubsystem extends SubsystemBase {
 
   public Pose2d getPose() {
     return poseEstimator.getEstimatedPosition();
+  }
+
+  public boolean poseInBounds(double x, double y) {
+    return x > 0.0 && x < RobotMap.FieldConstants.fieldLength && y > 0.0 && y < RobotMap.FieldConstants.fieldWidth;
+  }
+
+  public boolean visionJittery(EstimatedRobotPose prevPose, EstimatedRobotPose curPose) {
+    if (prevPose == null) {
+      return false;
+    } else if (curPose.estimatedPose.getTranslation().getDistance(
+        prevPose.estimatedPose.getTranslation()) < Math.abs(curPose.timestampSeconds - prevPose.timestampSeconds)
+            * Math.hypot(Robot.navX.getVelocityY(), Robot.navX.getVelocityX()) * RobotMap.Swerve.JITTER_FACTOR) {
+      return false;
+    } else {
+      return true;
+    }
   }
 
   public Vector<N3> getEstimationStdDevs(List<PhotonTrackedTarget> targetList) {
@@ -752,7 +782,6 @@ public class DriveSubsystem extends SubsystemBase {
         Rotation2d.fromDegrees(isBlue ? 0 : 180)));
   }
 
-
   public Pose2d calculateFieldPosition(FieldPosition position) {
 
     switch (position) {
@@ -869,5 +898,7 @@ public class DriveSubsystem extends SubsystemBase {
     Logger.recordOutput("Back Right Aritra", backRight.getPosition().angle.getDegrees());
     Logger.recordOutput("Alan is a persecuter", true);
     Logger.recordOutput("Real Swerve Module States", getModuleStates());
+    Logger.recordOutput("frontLeftVisionPose",frontLeftVisionPose.estimatedPose);
+    Logger.recordOutput("frontRightVisionPose",frontLeftVisionPose.estimatedPose);
   }
 }

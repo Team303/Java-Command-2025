@@ -134,7 +134,7 @@ public class SwerveModule {
 
     TalonFXConfiguration turnConfigs = new TalonFXConfiguration();
     turnConfigs.Feedback.FeedbackRemoteSensorID = turningCancoder.getDeviceID();
-    turnConfigs.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.RemoteCANcoder;
+    turnConfigs.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.FusedCANcoder;
 
     turnConfigs.Slot0.kP=turn_kP;
     turnConfigs.Slot0.kI=turn_kI;
