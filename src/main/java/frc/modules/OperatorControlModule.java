@@ -6,6 +6,7 @@ import static frc.autonomous.AutonomousProgram.AUTO_TAB;
 
 import java.awt.Point;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 
@@ -124,27 +125,28 @@ public class OperatorControlModule extends SubsystemBase {
         strategyEntry = OPERATOR_TAB.add("Current Strategy", "Error: No strategy set").getEntry();
         leftCoralSubstation = OPERATOR_TAB.add("LCOR", false).withWidget("Toggle Button").getEntry();
         rightCoralSubstation = OPERATOR_TAB.add("RCOR", false).withWidget("Toggle Button").getEntry();
-        onTheFlyAutoStart = OPERATOR_TAB.add("Start",false).withWidget("Toggle Button").getEntry();
+        onTheFlyAutoStart = OPERATOR_TAB.add("Start", false).withWidget("Toggle Button").getEntry();
     }
 
     public void moveUp() {
         if (!hoverValue.equals(queuedValue)) {
             nodeSuperStateValues[hoverValue.x][hoverValue.y] = NodeSuperState.NONE.value;
-        } else {
+        } else if (nodeSuperStateValues[hoverValue.x][hoverValue.y] != NodeSuperState.IN_PROGRESS.value) {
             nodeSuperStateValues[hoverValue.x][hoverValue.y] = NodeSuperState.QUEUED.value;
         }
         do {
             hoverValue.y = (hoverValue.y + 1) % 4;
 
         } while (nodeSuperStateValues[hoverValue.x][hoverValue.y] != NodeSuperState.NONE.value
-                && nodeSuperStateValues[hoverValue.x][hoverValue.y] != NodeSuperState.QUEUED.value);
+                && nodeSuperStateValues[hoverValue.x][hoverValue.y] != NodeSuperState.QUEUED.value
+                && nodeSuperStateValues[hoverValue.x][hoverValue.y] != NodeSuperState.IN_PROGRESS.value);
         nodeSuperStateValues[hoverValue.x][hoverValue.y] = NodeSuperState.HOVER.value;
     }
 
     public void moveDown() {
         if (!hoverValue.equals(queuedValue)) {
             nodeSuperStateValues[hoverValue.x][hoverValue.y] = NodeSuperState.NONE.value;
-        } else {
+        } else if (nodeSuperStateValues[hoverValue.x][hoverValue.y] != NodeSuperState.IN_PROGRESS.value) {
             nodeSuperStateValues[hoverValue.x][hoverValue.y] = NodeSuperState.QUEUED.value;
         }
         do {
@@ -152,14 +154,15 @@ public class OperatorControlModule extends SubsystemBase {
             if (hoverValue.y < 0)
                 hoverValue.y += 4;
         } while (nodeSuperStateValues[hoverValue.x][hoverValue.y] != NodeSuperState.NONE.value
-                && nodeSuperStateValues[hoverValue.x][hoverValue.y] != NodeSuperState.QUEUED.value);
+                && nodeSuperStateValues[hoverValue.x][hoverValue.y] != NodeSuperState.QUEUED.value
+                && nodeSuperStateValues[hoverValue.x][hoverValue.y] != NodeSuperState.IN_PROGRESS.value);
         nodeSuperStateValues[hoverValue.x][hoverValue.y] = NodeSuperState.HOVER.value;
     }
 
     public void moveClockwise() {
         if (!hoverValue.equals(queuedValue)) {
             nodeSuperStateValues[hoverValue.x][hoverValue.y] = NodeSuperState.NONE.value;
-        } else {
+        } else if (nodeSuperStateValues[hoverValue.x][hoverValue.y] != NodeSuperState.IN_PROGRESS.value) {
             nodeSuperStateValues[hoverValue.x][hoverValue.y] = NodeSuperState.QUEUED.value;
         }
         do {
@@ -167,20 +170,22 @@ public class OperatorControlModule extends SubsystemBase {
             if (hoverValue.x < 0)
                 hoverValue.x += 12;
         } while (nodeSuperStateValues[hoverValue.x][hoverValue.y] != NodeSuperState.NONE.value
-                && nodeSuperStateValues[hoverValue.x][hoverValue.y] != NodeSuperState.QUEUED.value);
+                && nodeSuperStateValues[hoverValue.x][hoverValue.y] != NodeSuperState.QUEUED.value
+                && nodeSuperStateValues[hoverValue.x][hoverValue.y] != NodeSuperState.IN_PROGRESS.value);
         nodeSuperStateValues[hoverValue.x][hoverValue.y] = NodeSuperState.HOVER.value;
     }
 
     public void moveCounterclockwise() {
         if (!hoverValue.equals(queuedValue)) {
             nodeSuperStateValues[hoverValue.x][hoverValue.y] = NodeSuperState.NONE.value;
-        } else {
+        } else if (nodeSuperStateValues[hoverValue.x][hoverValue.y] != NodeSuperState.IN_PROGRESS.value) {
             nodeSuperStateValues[hoverValue.x][hoverValue.y] = NodeSuperState.QUEUED.value;
         }
         do {
             hoverValue.x = (hoverValue.x + 1) % 12;
         } while (nodeSuperStateValues[hoverValue.x][hoverValue.y] != NodeSuperState.NONE.value
-                && nodeSuperStateValues[hoverValue.x][hoverValue.y] != NodeSuperState.QUEUED.value);
+                && nodeSuperStateValues[hoverValue.x][hoverValue.y] != NodeSuperState.QUEUED.value
+                && nodeSuperStateValues[hoverValue.x][hoverValue.y] != NodeSuperState.IN_PROGRESS.value);
         nodeSuperStateValues[hoverValue.x][hoverValue.y] = NodeSuperState.HOVER.value;
     }
 
@@ -204,7 +209,8 @@ public class OperatorControlModule extends SubsystemBase {
 
     public void lockIn() {
         if (queuedValue == null) {
-            System.out.println("\nNEED TO SELECT A NODE FIRST\nNEED TO SELECT A NODE FIRST\nNEED TO SELECT A NODE FIRST\nNEED TO SELECT A NODE FIRST\nNEED TO SELECT A NODE FIRST\nNEED TO SELECT A NODE FIRST\nNEED TO SELECT A NODE FIRST\nNEED TO SELECT A NODE FIRST\nNEED TO SELECT A NODE FIRST\nNEED TO SELECT A NODE FIRST\nNEED TO SELECT A NODE FIRST");
+            System.out.println(
+                    "\nNEED TO SELECT A NODE FIRST\nNEED TO SELECT A NODE FIRST\nNEED TO SELECT A NODE FIRST\nNEED TO SELECT A NODE FIRST\nNEED TO SELECT A NODE FIRST\nNEED TO SELECT A NODE FIRST\nNEED TO SELECT A NODE FIRST\nNEED TO SELECT A NODE FIRST\nNEED TO SELECT A NODE FIRST\nNEED TO SELECT A NODE FIRST\nNEED TO SELECT A NODE FIRST");
             return;
         }
         nodeSuperStateValues[queuedValue.x][queuedValue.y] = NodeSuperState.IN_PROGRESS.value;
@@ -212,7 +218,8 @@ public class OperatorControlModule extends SubsystemBase {
 
     public void lockOut() {
         if (queuedValue == null) {
-            System.out.println("\nNEED TO SELECT A NODE FIRST\nNEED TO SELECT A NODE FIRST\nNEED TO SELECT A NODE FIRST\nNEED TO SELECT A NODE FIRST\nNEED TO SELECT A NODE FIRST\nNEED TO SELECT A NODE FIRST\nNEED TO SELECT A NODE FIRST\nNEED TO SELECT A NODE FIRST\nNEED TO SELECT A NODE FIRST\nNEED TO SELECT A NODE FIRST\nNEED TO SELECT A NODE FIRST");
+            System.out.println(
+                    "\nNEED TO SELECT A NODE FIRST\nNEED TO SELECT A NODE FIRST\nNEED TO SELECT A NODE FIRST\nNEED TO SELECT A NODE FIRST\nNEED TO SELECT A NODE FIRST\nNEED TO SELECT A NODE FIRST\nNEED TO SELECT A NODE FIRST\nNEED TO SELECT A NODE FIRST\nNEED TO SELECT A NODE FIRST\nNEED TO SELECT A NODE FIRST\nNEED TO SELECT A NODE FIRST");
             return;
         }
         nodeSuperStateValues[queuedValue.x][queuedValue.y] = NodeSuperState.NONE.value;
@@ -232,18 +239,25 @@ public class OperatorControlModule extends SubsystemBase {
                 } else if (autoValues[i][j] == NodeState.CORAL.value && autoState[j] == NodeState.NONE.value) {
                     for (int k = autoQueue.indexOf(new Point(i, j)); k < autoQueue.size(); k++) {
                         Point cur = autoQueue.get(k);
-                        if(cur.x<12){
+                        if (cur.x < 12) {
                             autoValues[cur.x][cur.y] = NodeState.NONE.value;
+                            auto.getSubTable("auto " + sideNames[cur.x]).getEntry("State")
+                                    .setIntegerArray(autoValues[cur.x]);
+                            autoState = auto.getSubTable("auto " + sideNames[i]).getEntry("State")
+                                    .getIntegerArray(new long[] { 0, 0, 0, 0 });
                         }
                     }
+                    System.out.println("bruh");
                     autoQueue = new ArrayList<Point>(autoQueue.subList(0, autoQueue.indexOf(new Point(i, j))));
                     autoValues[i][j] = NodeState.NONE.value;
                 }
             }
-        }
-        for (int i = 0; i < 12; i++) {
             auto.getSubTable("auto " + sideNames[i]).getEntry("State").setIntegerArray(autoValues[i]);
         }
+        // for (int i = 0; i < 12; i++) {
+        // auto.getSubTable("auto " +
+        // sideNames[i]).getEntry("State").setIntegerArray(autoValues[i]);
+        // }
         if (leftCoralSubstation.getBoolean(false) && autoQueue.size() > 0
                 && !autoQueue.get(autoQueue.size() - 1).equals(new Point(12, 12))) {
             autoQueue.add(new Point(12, 12));
@@ -252,7 +266,7 @@ public class OperatorControlModule extends SubsystemBase {
             autoQueue.add(new Point(12, 12));
             leftCoralSubstation.setBoolean(false);
         } else if (leftCoralSubstation.getBoolean(false)) {
-            autoQueue.remove(autoQueue.get(autoQueue.size() - 1));
+            autoQueue.remove(autoQueue.size() - 1);
             leftCoralSubstation.setBoolean(false);
         }
         if (rightCoralSubstation.getBoolean(false) && autoQueue.size() > 0
@@ -263,7 +277,7 @@ public class OperatorControlModule extends SubsystemBase {
             autoQueue.add(new Point(13, 13));
             rightCoralSubstation.setBoolean(false);
         } else if (rightCoralSubstation.getBoolean(false)) {
-            autoQueue.remove(autoQueue.get(autoQueue.size() - 1));
+            autoQueue.remove(autoQueue.size() - 1);
             rightCoralSubstation.setBoolean(false);
         }
         String temp2 = "";
@@ -280,7 +294,7 @@ public class OperatorControlModule extends SubsystemBase {
     }
 
     public FieldPosition getQueuedPosition() {
-        if(queuedValue==null) {
+        if (queuedValue == null) {
             System.out.println("adsfasdfadfa");
             return FieldPosition.CURRENT_POSE;
         }
@@ -357,7 +371,7 @@ public class OperatorControlModule extends SubsystemBase {
                     return FieldPosition.CURRENT_POSE;
             }
         }
-       // return FieldPosition.CURRENT_POSE;
+        // return FieldPosition.CURRENT_POSE;
     }
 
     public void setPiece() {
@@ -402,6 +416,10 @@ public class OperatorControlModule extends SubsystemBase {
             currentStrategy = ScoreStrategy.MAX_POINTS;
         }
 
+    }
+
+    public void interrupted() {
+        nodeSuperStateValues[queuedValue.x][queuedValue.y] = NodeSuperState.QUEUED.value;
     }
 
     public void autoHover() {

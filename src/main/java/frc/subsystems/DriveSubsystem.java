@@ -174,6 +174,7 @@ public class DriveSubsystem extends SubsystemBase {
       "Front left vision out of bounds, pose not taken", AlertType.kWarning);
   private final Alert logFrontRightOOB = new Alert("Operator Terminal",
       "Front right vision out of bounds, pose not taken", AlertType.kWarning);
+  private final Alert logNoNodeSelected = new Alert("Operator Terminal","No field position sleected, path not run",AlertType.kError);
 
   public static double angularVelocity = 0;
 
@@ -538,11 +539,10 @@ public class DriveSubsystem extends SubsystemBase {
   public Command pathfindthenFollowPath(FieldPosition position) {
     PathConstraints constraints = new PathConstraints(3.0, 3.0, 2 * Math.PI, 4 * Math.PI); // The constraints for this
     if (position.name().equals("CURRENT_POSE")) {
-      System.out.println(
-          "THERE IS NO NODE SELECTED\nTHERE IS NO NODE SELECTED\nTHERE IS NO NODE SELECTED\nTHERE IS NO NODE SELECTED\n");
+      logNoNodeSelected.set(true);
       return Commands.none();
     } else {
-      System.out.println("YES\nYES\nYES\nYES\nYES");
+      logNoNodeSelected.set(false);
       return AutoBuilder.pathfindThenFollowPath(pathFromFile(position.name()), constraints);
     }
   }
@@ -898,7 +898,11 @@ public class DriveSubsystem extends SubsystemBase {
     Logger.recordOutput("Back Right Aritra", backRight.getPosition().angle.getDegrees());
     Logger.recordOutput("Alan is a persecuter", true);
     Logger.recordOutput("Real Swerve Module States", getModuleStates());
+    if(frontLeftVisionPose!=null){
     Logger.recordOutput("frontLeftVisionPose",frontLeftVisionPose.estimatedPose);
+    }
+    if(frontRightVisionPose!=null){
     Logger.recordOutput("frontRightVisionPose",frontLeftVisionPose.estimatedPose);
+    }
   }
 }

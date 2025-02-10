@@ -191,6 +191,7 @@ public class Robot extends LoggedRobot {
 		//setDefaultCommand initialization goes here
 		swerve.setDefaultCommand(new DefaultDrive(true));
 		swerve.resetOnlyNavX();
+		operatorControl.autoHover();
 		CameraServer.startAutomaticCapture();
 		//Driver Camera code:
 		// CvSink cvSink = CameraServer.getVideo();
@@ -246,7 +247,7 @@ public class Robot extends LoggedRobot {
 		//TODO: Add scoring routine into start button
 		//TODO: Add scoring routine into start button
 		// driverController.start().onTrue(Commands.runOnce(() -> operatorControl.lockIn()).andThen(swerve.pathfindthenFollowPath(FieldPosition.RED_REEF_A), Commands.runOnce(() -> operatorControl.lockOut())));
-		driverController.start().toggleOnTrue((Commands.runOnce(() -> operatorControl.lockIn()).andThen(Commands.defer(() -> swerve.pathfindthenFollowPath(operatorControl.getQueuedPosition()),getQueuedPositionRequirements),Commands.runOnce(() -> operatorControl.lockOut()))).onlyIf(() -> operatorControl.queuedValue != null)).toggleOnFalse(Commands.none());
+		driverController.start().toggleOnTrue((Commands.runOnce(() -> operatorControl.lockIn()).andThen(Commands.defer(() -> swerve.pathfindthenFollowPath(operatorControl.getQueuedPosition()),getQueuedPositionRequirements),Commands.runOnce(() -> operatorControl.lockOut())).handleInterrupt(()->operatorControl.interrupted())).onlyIf(() -> operatorControl.queuedValue != null));
 		// driverController.start().toggleOnTrue(new SequentialCommandGroup(Commands.runOnce(() -> System.out.println("1")),Commands.runOnce(() -> System.out.println("2")),Commands.runOnce(() -> System.out.println("3"))));
 			// Commands.runOnce(() -> operatorControl.lockIn()).andThen(swerve.pathfindthenFollowPath(FieldPosition.RED_REEF_A), Commands.runOnce(() -> operatorControl.lockOut())));
 		// driverController.start().onTrue((Commands.runOnce(() -> operatorControl.lockIn()).andThen(() -> System.out.println("woah")).andThen(() -> operatorControl.lockOut())).unless(() -> operatorControl.queuedValue == null));
