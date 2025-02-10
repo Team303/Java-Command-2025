@@ -343,10 +343,10 @@ public class DriveSubsystem extends SubsystemBase {
         this::resetOdometry, // Method to reset odometry (will be called if your auto has a starting pose)
         this::getRobotRelativeSpeeds, // ChassisSpeeds supplier. MUST BE ROBOT RELATIVE
         this::robotRelativeDrive, // Method that will drive the robot given ROBOT RELATIVE ChassisSpeeds
-        new PPHolonomicDriveController(new PIDConstants(5, 0.0, 0.0), new PIDConstants(8, 0, 0)), new RobotConfig(
+        new PPHolonomicDriveController(new PIDConstants(5, 0.0, 0.5), new PIDConstants(8, 0, 0)), new RobotConfig(
             Units.lbsToKilograms(RobotMap.Swerve.ROBOT_MASS),
             RobotMap.Swerve.ROBOT_MOI,
-            new ModuleConfig(Units.inchesToMeters(2), kMaxSpeed, kMaxAngularSpeed,
+            new ModuleConfig(Units.inchesToMeters(2), kMaxSpeed*3, kMaxAngularSpeed,
                 new DCMotor(12, 7.09, 366, 2, Units.rotationsPerMinuteToRadiansPerSecond(6000), 1), 130, 1),
             frontLeftLocation, frontRightLocation, backLeftLocation, backRightLocation),
         () -> {
@@ -902,7 +902,7 @@ public class DriveSubsystem extends SubsystemBase {
     Logger.recordOutput("frontLeftVisionPose",frontLeftVisionPose.estimatedPose);
     }
     if(frontRightVisionPose!=null){
-    Logger.recordOutput("frontRightVisionPose",frontLeftVisionPose.estimatedPose);
+    Logger.recordOutput("frontRightVisionPose",frontRightVisionPose.estimatedPose);
     }
   }
 }

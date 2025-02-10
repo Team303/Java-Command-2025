@@ -454,6 +454,19 @@
               "_glyph": 148,
               "_showGlyph": false
             }
+          },
+          "7,2": {
+            "size": [
+              3,
+              1
+            ],
+            "content": {
+              "_type": "Toggle Button",
+              "_source0": "network_table:///Shuffleboard/Operator/Start",
+              "_title": "Shuffleboard/Operator/Start",
+              "_glyph": 148,
+              "_showGlyph": false
+            }
           }
         }
       }

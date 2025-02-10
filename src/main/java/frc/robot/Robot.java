@@ -50,6 +50,7 @@ import frc.modules.PhotonvisionModule;
 import frc.robot.util.LocalADStarAK;
 // import frc.commands.drive.TurnToSpeaker;
 import frc.subsystems.DriveSubsystem;
+import frc.subsystems.ElevatorSubsystem;
 import frc.subsystems.EndEffectorSubsystem;
 import frc.subsystems.ElevatorSubsystem;
 
@@ -142,8 +143,8 @@ public class Robot extends LoggedRobot {
 	public void robotInit() {
 		photonvision = new PhotonvisionModule();
 		swerve = new DriveSubsystem();
-		endEffector = new EndEffectorSubsystem();
-		// swerve = new SSubsystem();
+		endEffector = null;
+		elevator = null;
 		operatorControl = new OperatorControlModule();
 		elevator = new ElevatorSubsystem();
 		getQueuedPositionRequirements = new HashSet<Subsystem>();
@@ -261,9 +262,9 @@ public class Robot extends LoggedRobot {
 		// driverController.x().onTrue();
 
 		//Game-specific Button Bindings go here
-		operatorController.a().onTrue(new IntakeCoral());
-		operatorController.b().onTrue(new ShootCoral(1));
-		operatorController.x().onTrue(new ShootCoral(2));
+		// operatorController.a().onTrue(new IntakeCoral());
+		// operatorController.b().onTrue(new ShootCoral(1));
+		// operatorController.x().onTrue(new ShootCoral(2));
 
 	}
 

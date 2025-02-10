@@ -526,6 +526,7 @@ public class OperatorControlModule extends SubsystemBase {
             operator.getSubTable(sideNames[i]).getEntry("State").setIntegerArray(integratedNodeValues[i]);
         }
         if (timer.hasElapsed(0.02)) {
+            System.out.println(timer.get());
             logCommandLoopOverrun.set(true);
         } else {
             logCommandLoopOverrun.set(false);

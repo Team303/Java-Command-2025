@@ -40,7 +40,8 @@ public class RobotMap {
 				+ 19.16 + 58.711 + 164.4 + 62.139) / 360;
 
 		public static final double SWERVE_CONVERSION_FACTOR = (14.0 / 50.0) * (28.0 / 16.0) * (15.0 / 45.0);
-		public static final double PHOTON_STDDEV_SCALING_FACTOR = 1.0;
+		public static final double PHOTON_STDDEV_DIST_SCALING_FACTOR = 1.0;
+		public static final double PHOTON_STDDEV_SPEED_SCALING_FACTOR = 1.0;
 		public static final double JITTER_FACTOR = 1.2;
 
 		public static final double STEER_REDUCTION = (14.0 / 50.0) * (10.0 / 60.0);
@@ -65,13 +66,13 @@ public class RobotMap {
 		// Transform3d(new Translation3d(0.381, 0, FRONT_LEFT_CAMERA_HEIGHT_METERS),new
 		// Rotation3d(0.0,0.0,Math.toRadians(45.0)));
 		public static final Transform3d ROBOT_TO_FRONT_LEFT_CAMERA = new Transform3d(
-				new Translation3d(Units.inchesToMeters(20), Units.inchesToMeters(-45),
+				new Translation3d(Units.inchesToMeters(28), Units.inchesToMeters(-27),
 						FRONT_LEFT_CAMERA_HEIGHT_METERS),
-				new Rotation3d(180, Math.toRadians(18.6), Math.toRadians(21)));
+				new Rotation3d(180, Math.toRadians(18.6), Math.toRadians(34)));
 		public static final Transform3d ROBOT_TO_FRONT_RIGHT_CAMERA = new Transform3d(
 				new Translation3d(Units.inchesToMeters(15), -Units.inchesToMeters(-10),
 						FRONT_RIGHT_CAMERA_HEIGHT_METERS),
-				new Rotation3d(Math.toRadians(180), Math.toRadians(18.6), Math.toRadians(-21)));
+				new Rotation3d(Math.toRadians(180), Math.toRadians(18.6), Math.toRadians(-55)));
 		// public static final Transform3d ROBOT_TO_FRONT_RIGHT_CAMERA= new
 		// Transform3d(new Translation3d(0,-0.381,FRONT_RIGHT_CAMERA_HEIGHT_METERS),new
 		// Rotation3d(0,0.0,Math.toRadians(315.0)));

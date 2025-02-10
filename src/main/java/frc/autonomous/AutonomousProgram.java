@@ -19,6 +19,7 @@ import static frc.robot.Robot.swerve;
 import static frc.robot.Robot.operatorControl;
 import static frc.modules.OperatorControlModule.onTheFlyAutoStart;
 import static frc.modules.OperatorControlModule.autoQueue;
+import static frc.robot.Robot.getQueuedPositionRequirements;
 
 public class AutonomousProgram {
 
@@ -112,11 +113,13 @@ public class AutonomousProgram {
 	}
 
 	public static Command constructSelectedRoutine() {
+		System.out.println("hiiii");
 		if(onTheFlyAutoStart.getBoolean(false)){
 			Command[] commandArray = new Command[autoQueue.size()];
 			for(int i=0;i<autoQueue.size();i++) {
+				System.out.println(autoQueue.get(i));
 				FieldPosition position = operatorControl.getQueuedPosition(autoQueue.get(i).x);
-				commandArray[i] = Commands.runOnce(() -> swerve.pathfindthenFollowPath(position).addRequirements(swerve));
+				commandArray[i] = Commands.defer(() -> swerve.pathfindthenFollowPath(position),getQueuedPositionRequirements);
 			}
 			Command ret = new SequentialCommandGroup(commandArray);
 			return ret;
