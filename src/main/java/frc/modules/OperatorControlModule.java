@@ -17,6 +17,7 @@ import frc.robot.Robot.ReefPosition;
 // import com.team303.robot.commands.led.LEDBounce;
 // import frc.robot.util.Alert;
 import frc.robot.util.ReefState;
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.Pair;
 import edu.wpi.first.math.geometry.Pose2d;
 // import frc.robot.util.Alert.AlertType;
@@ -39,6 +40,8 @@ import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.util.Color;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
@@ -205,6 +208,23 @@ public class OperatorControlModule extends SubsystemBase {
         moveCounterclockwise();
         // }
 
+    }
+
+    public void wheelMode() {
+        if(Math.abs(Robot.operatorController.getRightX()) > 0.25  || Math.abs(Robot.operatorController.getRightY()) > 0.25) {
+            double angle = Math.toDegrees(Math.atan2(-Robot.operatorController.getRightY(), Robot.operatorController.getRightX()));
+            System.out.println(angle);
+            angle /= 30;
+            angle += 3;
+            if(angle < 0) {
+                angle+=12;
+            } 
+            if(!hoverValue.equals(null)) {
+                nodeSuperStateValues[hoverValue.x][hoverValue.y] = NodeSuperState.NONE.value;
+            }
+            hoverValue.x = (int)angle;
+            nodeSuperStateValues[hoverValue.x][hoverValue.y] = NodeSuperState.HOVER.value;
+        }
     }
 
     public void lockIn() {

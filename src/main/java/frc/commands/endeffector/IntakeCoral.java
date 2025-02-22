@@ -13,11 +13,16 @@ public class IntakeCoral extends Command {
     }
 
     public void execute() {
-        endEffector.leftMotor.set(0.3);
-        endEffector.rightMotor.set(0.3);
+        endEffector.leftMotor.set(0.5);
+        endEffector.rightMotor.set(-0.5);
     }
 
-    public boolean isFinished() {
-        return endEffector.secondSeeCoral();
+   public boolean isFinished() {
+       return endEffector.secondSeeCoral();
+   }
+    
+    public void end(boolean interrupted) {
+        endEffector.leftMotor.set(0);
+        endEffector.rightMotor.set(0);
     }
 }

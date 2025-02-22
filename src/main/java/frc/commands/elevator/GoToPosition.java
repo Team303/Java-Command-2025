@@ -1,37 +1,77 @@
 package frc.commands.elevator;
 
+import com.ctre.phoenix6.configs.TalonFXConfiguration;
+
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Robot;
+import static frc.robot.Robot.elevator;
 
 public class GoToPosition extends Command {
-    
-    public int level;
-    public int position;
 
+    int newLevel;
+    
     public GoToPosition(int levelNumber) {
         addRequirements(Robot.elevator);
-        level = levelNumber;
+        newLevel = levelNumber;
     }
 
+    @Override
+    public void initialize() {
+
+        // var TalonFXConfiguration = new TalonFXConfiguration();
+
+        // var Slot0Configs = TalonFXConfiguration.Slot0;
+
+        // Slot0Configs.kG = 0.09;
+        // Slot0Configs.kV = 11.2;
+        // Slot0Configs.kA = 0.01;
+        // Slot0Configs.kP = 1;
+        // Slot0Configs.kI = 0;
+        // Slot0Configs.kD = 0;
+
+        // var motionMagicConfigs = TalonFXConfiguration.MotionMagic;
+        // motionMagicConfigs.MotionMagicAcceleration = 2000;
+        // motionMagicConfigs.MotionMagicJerk = 0;
+        // motionMagicConfigs.MotionMagicCruiseVelocity = 200;
+        // elevator.configuration(TalonFXConfiguration);
+      
+    }
+
+    
+    @Override
     public void execute() {
-        if(level == 1) {
-            Robot.elevator.moveToSetpoint(0);
-            position = 0;
-        } else if (level == 2) {
-            Robot.elevator.moveToSetpoint(10);
-            position = 10;
+        if(newLevel == 1) {
+            Robot.elevator.moveToSetpoint(3);
+           elevator.position = 3;
+            elevator.level = 1;
+        } else if (newLevel == 2) {
+            Robot.elevator.moveToSetpoint(6);
+           elevator.position = 10;
+            elevator.level = 2;
         }
-        else if (level == 3) {
+        else if (newLevel == 3) {
+            Robot.elevator.moveToSetpoint(9);
+           elevator.position = 15;
+            elevator.level = 3;
+        }
+        else if (newLevel == 4) {
             Robot.elevator.moveToSetpoint(20);
-            position = 20;
+           elevator.position = 20;
+            elevator.level = 4;
         }
-        else if (level == 4) {
-            Robot.elevator.moveToSetpoint(30);
-            position = 30;
-        }
+       Robot.elevator.update();
     }
 
-    public boolean isFinished() {
-        return Math.abs(Robot.elevator.leftElevatorMotor.getPosition().getValueAsDouble() - position) > 1.0;
-    }
+    // @Override
+    // public boolean isFinished() {
+    //     System.out.println("yoo "+Robot.elevator.getRealPosition(Robot.elevator.leftElevatorMotor));
+    //     return Math.abs(Robot.elevator.getRealPosition(Robot.elevator.leftElevatorMotor) - elevator.position) < 0.5;
+    // }
+
+    // @Override
+    // public void end(boolean interrupted) {
+    //     System.out.println("end");
+    //     elevator.leftElevatorMotor.set(0);
+    //     elevator.rightElevatorMotor.set(0);
+    // }
 }

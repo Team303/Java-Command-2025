@@ -47,12 +47,15 @@ import frc.commands.endeffector.IntakeCoral;
 import frc.commands.endeffector.ShootCoral;
 import frc.modules.OperatorControlModule;
 import frc.modules.PhotonvisionModule;
+import frc.robot.RobotMap.Algae;
 import frc.robot.util.LocalADStarAK;
 // import frc.commands.drive.TurnToSpeaker;
 import frc.subsystems.DriveSubsystem;
 import frc.subsystems.ElevatorSubsystem;
 import frc.subsystems.EndEffectorSubsystem;
 import frc.subsystems.ElevatorSubsystem;
+import frc.commands.elevator.GoToPosition;
+import frc.subsystems.AlgaeSubsystem;
 
 
 public class Robot extends LoggedRobot {
@@ -69,6 +72,7 @@ public class Robot extends LoggedRobot {
 	public static EndEffectorSubsystem endEffector;
 	public static OperatorControlModule operatorControl;
 	public static ElevatorSubsystem elevator;
+	public static AlgaeSubsystem algae;
 
 	public static HashSet<Subsystem> getQueuedPositionRequirements;
 
@@ -143,23 +147,24 @@ public class Robot extends LoggedRobot {
 	public void robotInit() {
 		photonvision = new PhotonvisionModule();
 		swerve = new DriveSubsystem();
-		endEffector = null;
-		elevator = null;
-		operatorControl = new OperatorControlModule();
+		endEffector = null; //new EndEffectorSubsystem();
 		elevator = new ElevatorSubsystem();
+		operatorControl = new OperatorControlModule();
+		algae = new AlgaeSubsystem();
+		
 		getQueuedPositionRequirements = new HashSet<Subsystem>();
 		getQueuedPositionRequirements.add(swerve);
 		getQueuedPositionRequirements.add(operatorControl);
 		CanBridge.runTCP();
 		//Subsystem initialization goes here
-		swerve.resetOdometry();
-		NamedCommands.registerCommand("Auto Align 9", new SequentialCommandGroup(
-			new AutoAlign(FieldPosition.RED_REEF_E).withTimeout(6)
-		));
+	//	swerve.resetOdometry();
+		// NamedCommands.registerCommand("Auto Align 9", new SequentialCommandGroup(
+		// 	new AutoAlign(FieldPosition.RED_REEF_E).withTimeout(6)
+		// ));
 
-		NamedCommands.registerCommand("Auto Align 11", new SequentialCommandGroup(
-			new AutoAlign(FieldPosition.RED_REEF_I).withTimeout(6)
-		));
+		// NamedCommands.registerCommand("Auto Align 11", new SequentialCommandGroup(
+		// 	new AutoAlign(FieldPosition.RED_REEF_I).withTimeout(6)
+		// ));
 
 		//NamedCommands.registerCommands() goes here
 		configureButtonBindings();
@@ -202,7 +207,7 @@ public class Robot extends LoggedRobot {
 
 	@Override
 	public void disabledInit() {
-		swerve.periodicReset();
+		//swerve.periodicReset();
 	}
 
 	@Override
@@ -228,8 +233,8 @@ public class Robot extends LoggedRobot {
 		operatorController.start().onTrue(Commands.runOnce(()-> operatorControl.queuePlacement()));
 		operatorController.back().onTrue(Commands.runOnce(()-> operatorControl.setPiece()));
 		operatorController.rightBumper().onTrue(Commands.runOnce(() -> operatorControl.toggleStrategy()));
-
-
+		operatorController.rightTrigger().whileTrue(Commands.runOnce(() -> operatorControl.wheelMode()).repeatedly());
+		operatorController.a().toggleOnTrue(new frc.commands.algae.Intake());
 
 
 
@@ -237,7 +242,7 @@ public class Robot extends LoggedRobot {
 		// 	driverController.leftBumper().onTrue(swerve.pathfindthenFollowPath(FieldPosition.BLUE_LEFT_CORALSUBSTATION));
 		// } else {
 		// 	driverController.leftBumper().onTrue(swerve.pathfindthenFollowPath(FieldPosition.RED_LEFT_CORALSUBSTATION));
-		// }
+		// }/ 
 		// if(DriverStation.getAlliance().isPresent()&&DriverStation.getAlliance().get()==Alliance.Blue){
 		// 	driverController.rightBumper().onTrue(swerve.pathfindthenFollowPath(FieldPosition.BLUE_RIGHT_CORALSUBSTATION));
 		// } else {
@@ -248,7 +253,7 @@ public class Robot extends LoggedRobot {
 		//TODO: Add scoring routine into start button
 		//TODO: Add scoring routine into start button
 		// driverController.start().onTrue(Commands.runOnce(() -> operatorControl.lockIn()).andThen(swerve.pathfindthenFollowPath(FieldPosition.RED_REEF_A), Commands.runOnce(() -> operatorControl.lockOut())));
-		driverController.start().toggleOnTrue((Commands.runOnce(() -> operatorControl.lockIn()).andThen(Commands.defer(() -> swerve.pathfindthenFollowPath(operatorControl.getQueuedPosition()),getQueuedPositionRequirements),Commands.runOnce(() -> operatorControl.lockOut())).handleInterrupt(()->operatorControl.interrupted())).onlyIf(() -> operatorControl.queuedValue != null));
+		//driverController.start().toggleOnTrue((Commands.runOnce(() -> operatorControl.lockIn()).asProxy().andThen(Commands.defer(() -> swerve.pathfindthenFollowPath(operatorControl.getQueuedPosition()),getQueuedPositionRequirements),Commands.runOnce(() -> operatorControl.lockOut()).asProxy()).handleInterrupt(()->operatorControl.interrupted())).onlyIf(() -> operatorControl.queuedValue != null));
 		// driverController.start().toggleOnTrue(new SequentialCommandGroup(Commands.runOnce(() -> System.out.println("1")),Commands.runOnce(() -> System.out.println("2")),Commands.runOnce(() -> System.out.println("3"))));
 			// Commands.runOnce(() -> operatorControl.lockIn()).andThen(swerve.pathfindthenFollowPath(FieldPosition.RED_REEF_A), Commands.runOnce(() -> operatorControl.lockOut())));
 		// driverController.start().onTrue((Commands.runOnce(() -> operatorControl.lockIn()).andThen(() -> System.out.println("woah")).andThen(() -> operatorControl.lockOut())).unless(() -> operatorControl.queuedValue == null));
@@ -258,14 +263,22 @@ public class Robot extends LoggedRobot {
 
 		//driverController.a().onTrue(new AutoAlign(FieldPosition.RED_REEF_E));
 		//driverController.a().onTrue(Commands.runOnce(() -> System.out.println("HELLOOOOOOOOO --> " + operatorControl.getQueuedPosition())));
-		//driverController.b().onTrue(swerve.pathfindthenFollowPath(FieldPosition.RED_REEF_E));
+		//driverController.b().onTrue(swerve.pathfindthenFollowPath(FieldPosition.RED_REEF_E);
 		// driverController.x().onTrue();
 
 		//Game-specific Button Bindings go here
-		// operatorController.a().onTrue(new IntakeCoral());
-		// operatorController.b().onTrue(new ShootCoral(1));
-		// operatorController.x().onTrue(new ShootCoral(2));
 
+
+		//elevator test
+		operatorController.a().toggleOnTrue(new GoToPosition(4));
+		operatorController.b().toggleOnTrue(new GoToPosition(3));
+		operatorController.x().toggleOnTrue(new GoToPosition(2));
+		operatorController.y().toggleOnTrue(new GoToPosition(1));
+		
+		//end effecotr test
+		// operatorController.start().toggleOnTrue(new ShootCoral(1));
+		// operatorController.a().toggleOnTrue(new ShootCoral(2));
+		// operatorController.back().toggleOnTrue(new IntakeCoral());
 	}
 
 	/* Currently running auto routine */

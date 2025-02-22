@@ -134,7 +134,7 @@ public class SwerveModule {
 
     TalonFXConfiguration turnConfigs = new TalonFXConfiguration();
     turnConfigs.Feedback.FeedbackRemoteSensorID = turningCancoder.getDeviceID();
-    turnConfigs.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.RemoteCANcoder;
+    turnConfigs.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.FusedCANcoder;
 
     turnConfigs.Slot0.kP=turn_kP;
     turnConfigs.Slot0.kI=turn_kI;
@@ -317,7 +317,7 @@ public class SwerveModule {
       driveMotor.setControl(new VoltageOut(0));
  
     }
-    if(Math.abs(turningMotor.getPosition().getValueAsDouble()-Units.radiansToRotations(normalizeAngle2(desiredState.angle.getRadians())))>0.5/360){
+    if(Math.abs(turningMotor.getPosition().getValueAsDouble()-Units.radiansToRotations(normalizeAngle2(desiredState.angle.getRadians())))>1.0/360){
       turningMotor.setControl(positionAngleControl.withPosition(Units.radiansToRotations(normalizeAngle2(desiredState.angle.getRadians()))).withVelocity(40*Units.radiansToRotations(DriveSubsystem.kMaxAngularSpeed)).withUpdateFreqHz(1000));
     } else {
       turningMotor.setControl(new VoltageOut(0));

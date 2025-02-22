@@ -113,7 +113,6 @@ public class AutonomousProgram {
 	}
 
 	public static Command constructSelectedRoutine() {
-		System.out.println("hiiii");
 		if(onTheFlyAutoStart.getBoolean(false)){
 			Command[] commandArray = new Command[autoQueue.size()];
 			for(int i=0;i<autoQueue.size();i++) {

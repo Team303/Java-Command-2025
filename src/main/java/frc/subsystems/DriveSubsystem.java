@@ -225,54 +225,54 @@ public class DriveSubsystem extends SubsystemBase {
     frontLeft = new SwerveModule("Left Front",
         RobotMap.Swerve.LEFT_FRONT_DRIVE_ID,
         RobotMap.Swerve.LEFT_FRONT_STEER_ID,
-        "rio",
-        "rio",
+        "Drivebase",
+        "Drivebase",
         RobotMap.Swerve.LEFT_FRONT_STEER_CANCODER_ID,
-        0.2,
+        0.1,
         0.0,
         0.0,
         50,
-        0.0,
+        0,
         0.0,
         configLeftFront);
 
     frontRight = new SwerveModule("Right Front",
         RobotMap.Swerve.RIGHT_FRONT_DRIVE_ID,
         RobotMap.Swerve.RIGHT_FRONT_STEER_ID,
-        "rio",
-        "rio",
+        "Drivebase",
+        "Drivebase",
         RobotMap.Swerve.RIGHT_FRONT_STEER_CANCODER_ID,
-        0.2,
+        0.1,
         0.0,
         0.0,
         50,
-        0.0,
+        0,
         0.0,
         configRightFront);
     backLeft = new SwerveModule("Left Back",
         RobotMap.Swerve.LEFT_BACK_DRIVE_ID,
         RobotMap.Swerve.LEFT_BACK_STEER_ID,
-        "rio",
-        "rio",
+        "Drivebase",
+        "Drivebase",
         RobotMap.Swerve.LEFT_BACK_STEER_CANCODER_ID,
-        0.2,
+        0.1,
         0.0,
         0.0,
         50,
-        0.0,
+        0,
         0.0,
         configLeftBack);
     backRight = new SwerveModule("Right Back",
         RobotMap.Swerve.RIGHT_BACK_DRIVE_ID,
         RobotMap.Swerve.RIGHT_BACK_STEER_ID,
-        "rio",
-        "rio",
+        "Drivebase",
+        "Drivebase",
         RobotMap.Swerve.RIGHT_BACK_STEER_CANCODER_ID,
-        0.2,
+        0.1,
         0.0,
         0.0,
         50,
-        0.0,
+        0,
         0.0,
         configRightBack);
 
@@ -286,10 +286,10 @@ public class DriveSubsystem extends SubsystemBase {
     backRight.invertSteerMotor(true);
     backLeft.invertSteerMotor(true);
 
-    frontLeft.invertDriveMotor(false);
+    frontLeft.invertDriveMotor(true);
     backLeft.invertDriveMotor(true);
     frontRight.invertDriveMotor(false);
-    backRight.invertDriveMotor(false);
+    backRight.invertDriveMotor(true);
 
     // frontLeft.getDrivePosition();
     // frontRight.getDrivePosition();
@@ -620,15 +620,16 @@ public class DriveSubsystem extends SubsystemBase {
   }
 
   public boolean visionJittery(EstimatedRobotPose prevPose, EstimatedRobotPose curPose) {
-    if (prevPose == null) {
-      return false;
-    } else if (curPose.estimatedPose.getTranslation().getDistance(
-        prevPose.estimatedPose.getTranslation()) < Math.abs(curPose.timestampSeconds - prevPose.timestampSeconds)
-            * Math.hypot(Robot.navX.getVelocityY(), Robot.navX.getVelocityX()) * RobotMap.Swerve.JITTER_FACTOR) {
-      return false;
-    } else {
-      return true;
-    }
+    return false;
+    // if (prevPose == null) {
+    //   return false;
+    // } else if (curPose.estimatedPose.getTranslation().getDistance(
+    //     prevPose.estimatedPose.getTranslation()) < Math.abs(curPose.timestampSeconds - prevPose.timestampSeconds)
+    //         * Math.hypot(Robot.navX.getVelocityY(), Robot.navX.getVelocityX()) * RobotMap.Swerve.JITTER_FACTOR) {
+    //   return false;
+    // } else {
+    //   return true;
+    // }
   }
 
   public Vector<N3> getEstimationStdDevs(List<PhotonTrackedTarget> targetList) {
@@ -655,7 +656,7 @@ public class DriveSubsystem extends SubsystemBase {
     // estStdDevs = VecBuilder.fill(Double.MAX_VALUE, Double.MAX_VALUE,
     // Double.MAX_VALUE);
     estStdDevs = estStdDevs.times(1 + (avgDist * avgDist *
-        RobotMap.Swerve.PHOTON_STDDEV_SCALING_FACTOR));
+        RobotMap.Swerve.PHOTON_STDDEV_DIST_SCALING_FACTOR));
 
     return estStdDevs;
   }
@@ -788,7 +789,7 @@ public class DriveSubsystem extends SubsystemBase {
       // TODO: Fix angles to be relative to real starting position
       // TODO: Add support for blue alliance
       case RED_LEFT_CORALSUBSTATION:
-        return new Pose2d(1, 1, Rotation2d.fromDegrees(60.0));
+        return new Pose2d(1.65, 6.60, Rotation2d.fromDegrees(60.0));
       case RED_RIGHT_CORALSUBSTATION:
         return new Pose2d(1, 1, Rotation2d.fromDegrees(180.0));
       case RED_PROCESSOR:
@@ -796,9 +797,9 @@ public class DriveSubsystem extends SubsystemBase {
       case RED_BARGE:
         return new Pose2d(1, 1, Rotation2d.fromDegrees(300.0));
       case RED_REEF_K:
-        return new Pose2d(1, 1, Rotation2d.fromDegrees(240.0));
+        return new Pose2d(3.65, 5.48, Rotation2d.fromDegrees(240.0));
       case RED_REEF_L:
-        return new Pose2d(1, 1, Rotation2d.fromDegrees(240.0));
+        return new Pose2d(3.65, 5.48, Rotation2d.fromDegrees(240.0));
       case RED_REEF_A:
         return new Pose2d(2.9, 4.025, Rotation2d.fromDegrees(300.0));
       case RED_REEF_B:
