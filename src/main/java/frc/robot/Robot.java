@@ -312,7 +312,22 @@ public class Robot extends LoggedRobot {
 			this.autonomousCommand = delay;
 		}
 
-		// Schedule the combined command group
+		// Schedule the combi
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		d command group
 		CommandScheduler.getInstance().schedule(this.autonomousCommand);
 	}
 

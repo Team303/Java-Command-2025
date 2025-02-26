@@ -98,6 +98,10 @@ public class RobotMap {
 		public static final int INTAKE_MOTOR_ID = 99;
 		public static final int PIVOT_MOTOR_ID = 31;
 		public static final double PIVOT_MOTOR_Kp = 97;
+		public static final double PIVOT_FEED_FORWARD_KS = 0;
+		public static final double PIVOT_FEED_FORWARD_KG = 0.22;
+		public static final double PIVOT_FEED_FORWARD_KV = 1.98;
+		public static final double PIVOT_FEED_FORWARD_KA = 0.01;
 	}
 
 	// Field-specific constants go here
