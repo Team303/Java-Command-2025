@@ -43,6 +43,7 @@ import org.littletonrobotics.junction.wpilog.WPILOGWriter;
 import frc.commands.drive.DefaultDrive;
 import frc.commands.drive.DriveWait;
 import frc.commands.drive.TurnToAngle;
+import frc.commands.endeffector.EjaculateCoral;
 import frc.commands.endeffector.IntakeCoral;
 import frc.commands.endeffector.ShootCoral;
 import frc.modules.OperatorControlModule;
@@ -65,6 +66,12 @@ public class Robot extends LoggedRobot {
 	public static final Joystick rightJoystick = new Joystick(3);
 
 	//HELLO
+	public static enum CoralState {
+		HOLDING,
+		NOT_HOLDING
+	}
+
+	public static CoralState coralState;
 
 	public static final AHRS navX = new AHRS();
 	public static PhotonvisionModule photonvision;
@@ -147,7 +154,7 @@ public class Robot extends LoggedRobot {
 	public void robotInit() {
 		photonvision = new PhotonvisionModule();
 		swerve = new DriveSubsystem();
-		endEffector = null; //new EndEffectorSubsystem();
+		endEffector = new EndEffectorSubsystem();
 		elevator = new ElevatorSubsystem();
 		operatorControl = new OperatorControlModule();
 		algae = new AlgaeSubsystem();
@@ -199,6 +206,7 @@ public class Robot extends LoggedRobot {
 		swerve.resetOnlyNavX();
 		operatorControl.autoHover();
 		CameraServer.startAutomaticCapture();
+		coralState = CoralState.NOT_HOLDING;
 		//Driver Camera code:
 		// CvSink cvSink = CameraServer.getVideo();
 		// CvSource outputStream = CameraServer.putVideo("Blur",1280,720);
@@ -276,9 +284,10 @@ public class Robot extends LoggedRobot {
 		operatorController.y().toggleOnTrue(new GoToPosition(1));
 		
 		//end effecotr test
-		// operatorController.start().toggleOnTrue(new ShootCoral(1));
-		// operatorController.a().toggleOnTrue(new ShootCoral(2));
-		// operatorController.back().toggleOnTrue(new IntakeCoral());
+		operatorController.start().toggleOnTrue(new ShootCoral(1));
+		operatorController.back().toggleOnTrue(new IntakeCoral());
+		operatorController.leftBumper().toggleOnTrue(new EjaculateCoral());
+		operatorController.rightBumper().toggleOnTrue(new ShootCoral(2));
 	}
 
 	/* Currently running auto routine */

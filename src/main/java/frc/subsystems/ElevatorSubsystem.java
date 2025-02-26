@@ -55,13 +55,13 @@ public class ElevatorSubsystem extends SubsystemBase {
         var Slot1Configs = TalonFXConfiguration.Slot1;
         Slot0Configs.kS= 0;
         Slot1Configs.kS = Slot0Configs.kS;
-        Slot0Configs.kG = 1.4;
+        Slot0Configs.kG = 0.45;
         Slot1Configs.kG = Slot0Configs.kG;
-        Slot0Configs.kV = -1.035;
+        Slot0Configs.kV = -0.3;
         Slot1Configs.kV = -Slot0Configs.kV;
-        Slot0Configs.kA = 0;
+        Slot0Configs.kA = -0.1;
         Slot1Configs.kA = Slot0Configs.kA;
-        Slot0Configs.kP = 0.5;
+        Slot0Configs.kP = 14*0.8;
         Slot1Configs.kP = Slot0Configs.kP;
         Slot0Configs.kI = 0;
         Slot1Configs.kI = Slot0Configs.kI;
@@ -70,8 +70,8 @@ public class ElevatorSubsystem extends SubsystemBase {
 
 
         var motionMagicConfigs = TalonFXConfiguration.MotionMagic;
-        motionMagicConfigs.MotionMagicAcceleration = 0.3;
-        motionMagicConfigs.MotionMagicCruiseVelocity = 1;
+        motionMagicConfigs.MotionMagicAcceleration = 35;
+        motionMagicConfigs.MotionMagicCruiseVelocity = 60;
         leftElevatorMotor.getConfigurator().apply(TalonFXConfiguration);
         rightElevatorMotor.getConfigurator().apply(TalonFXConfiguration);
 
@@ -152,7 +152,7 @@ public class ElevatorSubsystem extends SubsystemBase {
 
     @Override
     public void periodic() { 
-    leftMotorRotations.setDouble(getRealPosition(rightElevatorMotor));
+    rightMotorRotations.setDouble(getRealPosition(rightElevatorMotor));
     robotLevel.setInteger(level);
     goalPosition.setDouble(position);
     controls.setString("(4A)(3B)(2X)(1Y)");

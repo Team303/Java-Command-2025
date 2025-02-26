@@ -41,37 +41,36 @@ public class GoToPosition extends Command {
     @Override
     public void execute() {
         if(newLevel == 1) {
-            Robot.elevator.moveToSetpoint(3);
-           elevator.position = 3;
+            Robot.elevator.moveToSetpoint(0);
+           elevator.position = 0;
             elevator.level = 1;
         } else if (newLevel == 2) {
-            Robot.elevator.moveToSetpoint(6);
-           elevator.position = 10;
+            Robot.elevator.moveToSetpoint(3.8);
+           elevator.position = 3.8;
             elevator.level = 2;
         }
         else if (newLevel == 3) {
-            Robot.elevator.moveToSetpoint(9);
-           elevator.position = 15;
+            Robot.elevator.moveToSetpoint(10.5);
+           elevator.position = 10.5;
             elevator.level = 3;
         }
         else if (newLevel == 4) {
-            Robot.elevator.moveToSetpoint(20);
-           elevator.position = 20;
+            Robot.elevator.moveToSetpoint(23);
+           elevator.position = 23;
             elevator.level = 4;
         }
        Robot.elevator.update();
     }
 
-    // @Override
-    // public boolean isFinished() {
-    //     System.out.println("yoo "+Robot.elevator.getRealPosition(Robot.elevator.leftElevatorMotor));
-    //     return Math.abs(Robot.elevator.getRealPosition(Robot.elevator.leftElevatorMotor) - elevator.position) < 0.5;
-    // }
+    @Override
+    public boolean isFinished() {
+        return  newLevel == 1;
+    }
 
-    // @Override
-    // public void end(boolean interrupted) {
-    //     System.out.println("end");
-    //     elevator.leftElevatorMotor.set(0);
-    //     elevator.rightElevatorMotor.set(0);
-    // }
+    @Override
+    public void end(boolean interrupted) {
+        System.out.println("end");
+        elevator.leftElevatorMotor.set(0);
+        elevator.rightElevatorMotor.set(0);
+    }
 }
