@@ -44,7 +44,7 @@ public class EndEffectorSubsystem extends SubsystemBase {
 
       try {
         secondLC.setRangingMode(LaserCan.RangingMode.SHORT);
-        secondLC.setRegionOfInterest(new LaserCan.RegionOfInterest(13, 8, 3, 3));
+        secondLC.setRegionOfInterest(new LaserCan.RegionOfInterest(13, 8, 1, 1));
         secondLC.setTimingBudget(LaserCan.TimingBudget.TIMING_BUDGET_100MS);
       } catch (ConfigurationFailedException e) {
        System.out.println("Configuration failed! " + e);
@@ -52,8 +52,8 @@ public class EndEffectorSubsystem extends SubsystemBase {
 
 
     try {
-      firstLC.setRangingMode(LaserCan.RangingMode.SHORT);
-      firstLC.setRegionOfInterest(new LaserCan.RegionOfInterest(13, 8, 2, 2));
+      firstLC.setRangingMode(LaserCan.RangingMode.LONG);
+      firstLC.setRegionOfInterest(new LaserCan.RegionOfInterest(2, 8, 1, 1));
       firstLC.setTimingBudget(LaserCan.TimingBudget.TIMING_BUDGET_100MS);
       } catch (ConfigurationFailedException e) {
         System.out.println("Configuration failed! " + e);
@@ -61,7 +61,6 @@ public class EndEffectorSubsystem extends SubsystemBase {
 
 
     }
-
     public boolean firstSeeCoral()
     {
       return firstLC.getMeasurement().distance_mm < 100;
@@ -78,8 +77,8 @@ public class EndEffectorSubsystem extends SubsystemBase {
     secondLCValue.setDouble(secondLC.getMeasurement().distance_mm);
     Logger.recordOutput("coralState",coralState.toString());
     if(coralState==CoralState.HOLDING && firstSeeCoral()){
-      leftMotor.set(0.2);
-      rightMotor.set(-0.2);
+      leftMotor.set(0.15);
+      rightMotor.set(-0.15);
     } else if (coralState==CoralState.HOLDING) {
       leftMotor.set(0);
       rightMotor.set(0);

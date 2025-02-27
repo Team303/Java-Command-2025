@@ -47,7 +47,7 @@ public class AlgaeSubsystem extends SubsystemBase{
         x.idleMode(SparkBaseConfig.IdleMode.kBrake);
         pivotMotor.configure(x, SparkBase.ResetMode.kResetSafeParameters, SparkBase.PersistMode.kPersistParameters);
 
-        double pivotOutput = pidController.calculate()
+        // double pivotOutput = pidController.calculate()
 
     }
 
@@ -65,7 +65,8 @@ public class AlgaeSubsystem extends SubsystemBase{
 
     public double getAbsoluteAngle()
     {
-        return normalizeAngle(.getAbsolutePosition()*2*Math.PI - Math.toRadians(47+308));
+        // return normalizeAngle(.getAbsolutePosition()*2*Math.PI - Math.toRadians(47+308));
+        return 0.0;
     }
     
 

@@ -19,7 +19,6 @@ public class IntakeCoral extends Command {
     public void execute() {
         endEffector.leftMotor.set(0.45);
         endEffector.rightMotor.set(-0.45);
-        Logger.recordOutput("whyisthishappening",endEffector.secondSeeCoral());
         // canSee=endEffector.firstSeeCoral();
         // System.out.println("Yoo");
         

@@ -154,10 +154,10 @@ public class Robot extends LoggedRobot {
 	public void robotInit() {
 		photonvision = new PhotonvisionModule();
 		swerve = new DriveSubsystem();
-		endEffector = new EndEffectorSubsystem();
+		endEffector = null; //new EndEffectorSubsystem();
 		elevator = new ElevatorSubsystem();
 		operatorControl = new OperatorControlModule();
-		algae = new AlgaeSubsystem();
+		algae = null;
 		
 		getQueuedPositionRequirements = new HashSet<Subsystem>();
 		getQueuedPositionRequirements.add(swerve);
@@ -242,7 +242,7 @@ public class Robot extends LoggedRobot {
 		operatorController.back().onTrue(Commands.runOnce(()-> operatorControl.setPiece()));
 		operatorController.rightBumper().onTrue(Commands.runOnce(() -> operatorControl.toggleStrategy()));
 		operatorController.rightTrigger().whileTrue(Commands.runOnce(() -> operatorControl.wheelMode()).repeatedly());
-		operatorController.a().toggleOnTrue(new frc.commands.algae.Intake());
+		// operatorController.a().toggleOnTrue(new frc.commands.algae.Intake());
 
 
 
@@ -312,22 +312,7 @@ public class Robot extends LoggedRobot {
 			this.autonomousCommand = delay;
 		}
 
-		// Schedule the combi
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		d command group
+		// Schedule the combined command group
 		CommandScheduler.getInstance().schedule(this.autonomousCommand);
 	}
 

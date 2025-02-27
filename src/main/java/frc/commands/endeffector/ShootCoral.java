@@ -21,8 +21,8 @@ public class ShootCoral extends Command {
             Robot.endEffector.leftMotor.set(0.2);
         }
         else {
-            Robot.endEffector.rightMotor.set(-0.3);
-            Robot.endEffector.leftMotor.set(0.3);
+            Robot.endEffector.rightMotor.set(-0.2);
+            Robot.endEffector.leftMotor.set(0.2);
         }
     }
 
