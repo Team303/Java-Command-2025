@@ -39,6 +39,7 @@ import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.Vector;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
+import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -74,13 +75,12 @@ import frc.robot.RobotMap.PhotonvisionConstants;
 import frc.robot.RobotMap.Swerve;
 import edu.wpi.first.wpilibj.Alert;
 
+import static frc.robot.Robot.elevator;
 import static frc.robot.Robot.operatorControl;
 
 /** Represents a swerve drive style drivetrain. */
 public class DriveSubsystem extends SubsystemBase {
 
-  private boolean speakerLock = false;
-  private boolean ampLock = false;
   public static final double kMaxSpeed = 5.2 * 4; // 5.2 meters per second
   public static final double kMaxAngularSpeed = kMaxSpeed / (Math.hypot(0.381, 0.381)); // radians per second
 
@@ -107,6 +107,10 @@ public class DriveSubsystem extends SubsystemBase {
   private final PIDController headingController = new PIDController(7.5, 0.0, 0.0);
 
   private ChassisSpeeds relativeSpeeds = new ChassisSpeeds();
+
+  private final SlewRateLimiter accelerationTranslationFilter = new SlewRateLimiter(0.3);
+  private final SlewRateLimiter accelerationRotationFilter = new SlewRateLimiter(0.5);
+
 
   public AprilTagFieldLayout initialLayout;
 
@@ -433,41 +437,38 @@ public class DriveSubsystem extends SubsystemBase {
       return angleDeg + 360;
   }
 
-  public ChassisSpeeds ampAlign(ChassisSpeeds chassisSpeeds) {
+  // public ChassisSpeeds ampAlign(ChassisSpeeds chassisSpeeds) {
 
-    boolean isBlue = true;
+  //   boolean isBlue = true;
 
-    var alliance = DriverStation.getAlliance();
-    if (alliance.isPresent()) {
-      isBlue = alliance.get() == DriverStation.Alliance.Blue;
-    }
+  //   var alliance = DriverStation.getAlliance();
+  //   if (alliance.isPresent()) {
+  //     isBlue = alliance.get() == DriverStation.Alliance.Blue;
+  //   }
 
-    double angle = isBlue ? -90 : 90;
+  //   double angle = isBlue ? -90 : 90;
 
-    chassisSpeeds.omegaRadiansPerSecond -= speakerAlignPid.calculate(Robot.navX.getAngle(), angle);
+  //   chassisSpeeds.omegaRadiansPerSecond -= speakerAlignPid.calculate(Robot.navX.getAngle(), angle);
 
-    return chassisSpeeds;
-  }
+  //   return chassisSpeeds;
+  // }
 
-  public void setSpeakerLock() {
-    speakerLock = true;
-  }
 
-  public void setAmpLock() {
-    ampLock = true;
-  }
-
-  public void removeLock() {
-    ampLock = false;
-    speakerLock = false;
-  }
 
   public void drive(Translation2d translation, double rotation, boolean fieldOriented) {
-
-    ChassisSpeeds chassisSpeeds = fieldOriented
-        ? ChassisSpeeds.fromFieldRelativeSpeeds(translation.getX(), translation.getY(), rotation,
-            Rotation2d.fromDegrees(Robot.navX.getAngle()))
-        : new ChassisSpeeds(translation.getX(), translation.getY(), rotation);
+    ChassisSpeeds chassisSpeeds;
+    
+    if(elevator.level>2) {
+      chassisSpeeds = fieldOriented
+      ? ChassisSpeeds.fromFieldRelativeSpeeds(accelerationTranslationFilter.calculate(translation.getX()), accelerationTranslationFilter.calculate(translation.getY()), accelerationRotationFilter.calculate(rotation),
+          Rotation2d.fromDegrees(Robot.navX.getAngle()))
+      : new ChassisSpeeds(translation.getX(), translation.getY(), rotation);
+    } else {
+      chassisSpeeds = fieldOriented
+      ? ChassisSpeeds.fromFieldRelativeSpeeds(translation.getX(), translation.getY(), rotation,
+          Rotation2d.fromDegrees(Robot.navX.getAngle()))
+      : new ChassisSpeeds(translation.getX(), translation.getY(), rotation);
+    }
 
     // chassisSpeeds = translationalDriftCorrection(chassisSpeeds);
 
@@ -482,7 +483,11 @@ public class DriveSubsystem extends SubsystemBase {
   }
 
   public void robotRelativeDrive(ChassisSpeeds chassisSpeeds, DriveFeedforwards driveFeedForwards) {
-
+    if(elevator.level>2){
+      chassisSpeeds.vxMetersPerSecond = accelerationTranslationFilter.calculate(chassisSpeeds.vxMetersPerSecond);
+      chassisSpeeds.vyMetersPerSecond = accelerationTranslationFilter.calculate(chassisSpeeds.vyMetersPerSecond);
+      chassisSpeeds.omegaRadiansPerSecond = accelerationRotationFilter.calculate(chassisSpeeds.omegaRadiansPerSecond);
+    }
     drive(kinematics.toSwerveModuleStates(chassisSpeeds));
 
   }

@@ -43,7 +43,7 @@ import org.littletonrobotics.junction.wpilog.WPILOGWriter;
 import frc.commands.drive.DefaultDrive;
 import frc.commands.drive.DriveWait;
 import frc.commands.drive.TurnToAngle;
-import frc.commands.endeffector.EjaculateCoral;
+// import frc.commands.endeffector.EjaculateCoral;
 import frc.commands.endeffector.IntakeCoral;
 import frc.commands.endeffector.ShootCoral;
 import frc.modules.OperatorControlModule;
@@ -242,7 +242,7 @@ public class Robot extends LoggedRobot {
 		operatorController.back().onTrue(Commands.runOnce(()-> operatorControl.setPiece()));
 		operatorController.rightBumper().onTrue(Commands.runOnce(() -> operatorControl.toggleStrategy()));
 		operatorController.rightTrigger().whileTrue(Commands.runOnce(() -> operatorControl.wheelMode()).repeatedly());
-		operatorController.a().toggleOnTrue(new frc.commands.algae.Intake());
+		// operatorController.a().toggleOnTrue(new frc.commands.algae.Intake());
 
 
 
@@ -261,10 +261,10 @@ public class Robot extends LoggedRobot {
 		//TODO: Add scoring routine into start button
 		//TODO: Add scoring routine into start button
 		// driverController.start().onTrue(Commands.runOnce(() -> operatorControl.lockIn()).andThen(swerve.pathfindthenFollowPath(FieldPosition.RED_REEF_A), Commands.runOnce(() -> operatorControl.lockOut())));
-		//driverController.start().toggleOnTrue((Commands.runOnce(() -> operatorControl.lockIn()).asProxy().andThen(Commands.defer(() -> swerve.pathfindthenFollowPath(operatorControl.getQueuedPosition()),getQueuedPositionRequirements),Commands.runOnce(() -> operatorControl.lockOut()).asProxy()).handleInterrupt(()->operatorControl.interrupted())).onlyIf(() -> operatorControl.queuedValue != null));
+		// driverController.start().toggleOnTrue((Commands.runOnce(() -> operatorControl.lockIn()).asProxy().andThen(Commands.defer(() -> swerve.pathfindthenFollowPath(operatorControl.getQueuedPosition()),getQueuedPositionRequirements),Commands.runOnce(() -> operatorControl.lockOut()).asProxy()).handleInterrupt(()->operatorControl.interrupted())).onlyIf(() -> operatorControl.queuedValue != null));
 		// driverController.start().toggleOnTrue(new SequentialCommandGroup(Commands.runOnce(() -> System.out.println("1")),Commands.runOnce(() -> System.out.println("2")),Commands.runOnce(() -> System.out.println("3"))));
 			// Commands.runOnce(() -> operatorControl.lockIn()).andThen(swerve.pathfindthenFollowPath(FieldPosition.RED_REEF_A), Commands.runOnce(() -> operatorControl.lockOut())));
-		// driverController.start().onTrue((Commands.runOnce(() -> operatorControl.lockIn()).andThen(() -> System.out.println("woah")).andThen(() -> operatorControl.lockOut())).unless(() -> operatorControl.queuedValue == null));
+		driverController.start().onTrue((Commands.runOnce(() -> operatorControl.lockIn()).andThen(() -> System.out.println("woah")).andThen(() -> operatorControl.lockOut())).unless(() -> operatorControl.queuedValue == null));
 
 
 		// driverController.a().toggleOnTrue(new TurnToAngle(0).repeatedly());
@@ -286,7 +286,7 @@ public class Robot extends LoggedRobot {
 		//end effecotr test
 		operatorController.start().toggleOnTrue(new ShootCoral(1));
 		operatorController.back().toggleOnTrue(new IntakeCoral());
-		operatorController.leftBumper().toggleOnTrue(new EjaculateCoral());
+		// operatorController.leftBumper().toggleOnTrue(new EjaculateCoral());
 		operatorController.rightBumper().toggleOnTrue(new ShootCoral(2));
 	}
 
@@ -312,22 +312,7 @@ public class Robot extends LoggedRobot {
 			this.autonomousCommand = delay;
 		}
 
-		// Schedule the combi
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		d command group
+		// Schedule the combined command group
 		CommandScheduler.getInstance().schedule(this.autonomousCommand);
 	}
 
