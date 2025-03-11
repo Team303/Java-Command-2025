@@ -66,13 +66,13 @@ public class RobotMap {
 		// Transform3d(new Translation3d(0.381, 0, FRONT_LEFT_CAMERA_HEIGHT_METERS),new
 		// Rotation3d(0.0,0.0,Math.toRadians(45.0)));
 		public static final Transform3d ROBOT_TO_FRONT_LEFT_CAMERA = new Transform3d(
-				new Translation3d(Units.inchesToMeters(14), Units.inchesToMeters(0),
+				new Translation3d(Units.inchesToMeters(10), Units.inchesToMeters(-42),
 						FRONT_LEFT_CAMERA_HEIGHT_METERS),
-				new Rotation3d(180, Math.toRadians(18.6), Math.toRadians(-21)));
+				new Rotation3d(180, Math.toRadians(18.6), Math.toRadians(95-21-58+7+3)));
 		public static final Transform3d ROBOT_TO_FRONT_RIGHT_CAMERA = new Transform3d(
-				new Translation3d(Units.inchesToMeters(15), -Units.inchesToMeters(18),
+				new Translation3d(Units.inchesToMeters(0), -Units.inchesToMeters(16),
 						FRONT_RIGHT_CAMERA_HEIGHT_METERS),
-				new Rotation3d(Math.toRadians(180), Math.toRadians(18.6), Math.toRadians(22)));
+				new Rotation3d(Math.toRadians(180), Math.toRadians(18.6), Math.toRadians(2)));
 		// public static final Transform3d ROBOT_TO_FRONT_RIGHT_CAMERA= new
 		// Transform3d(new Translation3d(0,-0.381,FRONT_RIGHT_CAMERA_HEIGHT_METERS),new
 		// Rotation3d(0,0.0,Math.toRadians(315.0)));

@@ -33,6 +33,7 @@ import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
+import edu.wpi.first.wpilibj2.command.ParallelDeadlineGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
@@ -43,7 +44,7 @@ import org.littletonrobotics.junction.wpilog.WPILOGWriter;
 import frc.commands.drive.DefaultDrive;
 import frc.commands.drive.DriveWait;
 import frc.commands.drive.TurnToAngle;
-import frc.commands.endeffector.EjaculateCoral;
+// import frc.commands.endeffector.EjaculateCoral;
 import frc.commands.endeffector.IntakeCoral;
 import frc.commands.endeffector.ShootCoral;
 import frc.modules.OperatorControlModule;
@@ -154,7 +155,7 @@ public class Robot extends LoggedRobot {
 	public void robotInit() {
 		photonvision = new PhotonvisionModule();
 		swerve = new DriveSubsystem();
-		endEffector = null; //new EndEffectorSubsystem();
+		endEffector = new EndEffectorSubsystem();
 		elevator = new ElevatorSubsystem();
 		operatorControl = new OperatorControlModule();
 		algae = null;
@@ -246,25 +247,39 @@ public class Robot extends LoggedRobot {
 
 
 
-		// if(DriverStation.getAlliance().isPresent()&&DriverStation.getAlliance().get()==Alliance.Blue){
-		// 	driverController.leftBumper().onTrue(swerve.pathfindthenFollowPath(FieldPosition.BLUE_LEFT_CORALSUBSTATION));
-		// } else {
-		// 	driverController.leftBumper().onTrue(swerve.pathfindthenFollowPath(FieldPosition.RED_LEFT_CORALSUBSTATION));
-		// }/ 
-		// if(DriverStation.getAlliance().isPresent()&&DriverStation.getAlliance().get()==Alliance.Blue){
-		// 	driverController.rightBumper().onTrue(swerve.pathfindthenFollowPath(FieldPosition.BLUE_RIGHT_CORALSUBSTATION));
-		// } else {
-		// 	driverController.rightBumper().onTrue(swerve.pathfindthenFollowPath(FieldPosition.RED_RIGHT_CORALSUBSTATION));
-		// }
+		if(DriverStation.getAlliance().isPresent()&&DriverStation.getAlliance().get()==Alliance.Blue){
+			driverController.leftBumper().toggleOnTrue(new SequentialCommandGroup(swerve.pathfindthenFollowPath(FieldPosition.BLUE_LEFT_CORALSUBSTATION), new IntakeCoral()));
+		} else {
+			driverController.leftBumper().toggleOnTrue(new SequentialCommandGroup(swerve.pathfindthenFollowPath(FieldPosition.RED_LEFT_CORALSUBSTATION), new IntakeCoral()));
+		}
+		if(DriverStation.getAlliance().isPresent()&&DriverStation.getAlliance().get()==Alliance.Blue){
+			driverController.rightBumper().toggleOnTrue(new SequentialCommandGroup(swerve.pathfindthenFollowPath(FieldPosition.BLUE_RIGHT_CORALSUBSTATION), new IntakeCoral()));
+		} else {
+			driverController.rightBumper().toggleOnTrue(new SequentialCommandGroup(swerve.pathfindthenFollowPath(FieldPosition.RED_RIGHT_CORALSUBSTATION), new IntakeCoral()));
+		}
 		//TODO: Add scoring routine into start button
 		//TODO: Add scoring routine into start button
 		//TODO: Add scoring routine into start button
 		//TODO: Add scoring routine into start button
 		// driverController.start().onTrue(Commands.runOnce(() -> operatorControl.lockIn()).andThen(swerve.pathfindthenFollowPath(FieldPosition.RED_REEF_A), Commands.runOnce(() -> operatorControl.lockOut())));
-		//driverController.start().toggleOnTrue((Commands.runOnce(() -> operatorControl.lockIn()).asProxy().andThen(Commands.defer(() -> swerve.pathfindthenFollowPath(operatorControl.getQueuedPosition()),getQueuedPositionRequirements),Commands.runOnce(() -> operatorControl.lockOut()).asProxy()).handleInterrupt(()->operatorControl.interrupted())).onlyIf(() -> operatorControl.queuedValue != null));
+		// driverController.start().toggleOnTrue(new SequentialCommandGroup((Commands.runOnce(() -> operatorControl.lockIn()).asProxy().andThen(Commands.defer(() -> swerve.pathfindthenFollowPath(operatorControl.getQueuedPosition()),getQueuedPositionRequirements),Commands.runOnce(() -> operatorControl.lockOut()).asProxy()).handleInterrupt(()->operatorControl.interrupted())).onlyIf(() -> operatorControl.queuedValue != null),
+		// new GoToPosition(operatorControl.getQueuedLevel()).onlyIf(() -> operatorControl.queuedValue != null),
+		// 		new ParallelDeadlineGroup(
+		// 			new ShootCoral(operatorControl.getQueuedLevel()).onlyIf(() -> operatorControl.queuedValue != null), 
+		// 			new GoToPosition(operatorControl.getQueuedLevel()).onlyIf(() -> operatorControl.queuedValue != null)),
+		// 		new GoToPosition(1)));
+
+		driverController.back().toggleOnTrue(new SequentialCommandGroup(new GoToPosition(3, false), new ParallelCommandGroup(new GoToPosition(3, true), 
+		Commands.runOnce(() -> operatorControl.lockIn()).asProxy().andThen(Commands.defer(() -> swerve.pathfindthenFollowPath(operatorControl.getQueuedPosition()),getQueuedPositionRequirements),Commands.runOnce(() -> operatorControl.lockOut()).asProxy()).handleInterrupt(()->operatorControl.interrupted())).onlyIf(() -> operatorControl.queuedValue != null)));
 		// driverController.start().toggleOnTrue(new SequentialCommandGroup(Commands.runOnce(() -> System.out.println("1")),Commands.runOnce(() -> System.out.println("2")),Commands.runOnce(() -> System.out.println("3"))));
 			// Commands.runOnce(() -> operatorControl.lockIn()).andThen(swerve.pathfindthenFollowPath(FieldPosition.RED_REEF_A), Commands.runOnce(() -> operatorControl.lockOut())));
-		// driverController.start().onTrue((Commands.runOnce(() -> operatorControl.lockIn()).andThen(() -> System.out.println("woah")).andThen(() -> operatorControl.lockOut())).unless(() -> operatorControl.queuedValue == null));
+		driverController.start().toggleOnTrue(
+			new SequentialCommandGroup(
+				new GoToPosition(3, false), 
+				new ParallelDeadlineGroup( 
+					Commands.runOnce(() -> operatorControl.lockIn()).asProxy().andThen(Commands.defer(() -> swerve.pathfindthenFollowPath(operatorControl.getQueuedPosition()),getQueuedPositionRequirements),Commands.runOnce(() -> operatorControl.lockOut()).asProxy()).handleInterrupt(()->operatorControl.interrupted()).onlyIf(() -> operatorControl.queuedValue != null),
+					new GoToPosition(3, true)),
+				new ParallelDeadlineGroup(new ShootCoral(3), new GoToPosition(3, true))));
 
 
 		// driverController.a().toggleOnTrue(new TurnToAngle(0).repeatedly());
@@ -278,15 +293,15 @@ public class Robot extends LoggedRobot {
 
 
 		//elevator test
-		operatorController.a().toggleOnTrue(new GoToPosition(4));
-		operatorController.b().toggleOnTrue(new GoToPosition(3));
-		operatorController.x().toggleOnTrue(new GoToPosition(2));
-		operatorController.y().toggleOnTrue(new GoToPosition(1));
+		// operatorController.a().toggleOnTrue(new GoToPosition(4));
+		operatorController.b().toggleOnTrue(new GoToPosition(3, true));
+		operatorController.x().toggleOnTrue(new GoToPosition(2, true));
+		// operatorController.y().toggleOnTrue(new GoToPosition(1));
 		
 		//end effecotr test
-		operatorController.start().toggleOnTrue(new ShootCoral(1));
-		operatorController.back().toggleOnTrue(new IntakeCoral());
-		operatorController.leftBumper().toggleOnTrue(new EjaculateCoral());
+		operatorController.a().toggleOnTrue(new ShootCoral(1));
+		operatorController.y().toggleOnTrue(new IntakeCoral());
+		// operatorController.leftBumper().toggleOnTrue(new EjaculateCoral());
 		operatorController.rightBumper().toggleOnTrue(new ShootCoral(2));
 	}
 

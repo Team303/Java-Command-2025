@@ -243,7 +243,9 @@ public class OperatorControlModule extends SubsystemBase {
             return;
         }
         nodeSuperStateValues[queuedValue.x][queuedValue.y] = NodeSuperState.NONE.value;
-        nodeStateValues[queuedValue.x][queuedValue.y] = NodeState.CORAL.value;
+        if(queuedValue.y!=0) {
+            nodeStateValues[queuedValue.x][queuedValue.y] = NodeState.CORAL.value;
+        }
         queuedValue = null;
         autoHover();
     }
@@ -319,6 +321,10 @@ public class OperatorControlModule extends SubsystemBase {
             return FieldPosition.CURRENT_POSE;
         }
         return getQueuedPosition(queuedValue.x);
+    }
+
+    public int getQueuedLevel() {
+        return queuedValue.y;
     }
 
     public FieldPosition getQueuedPosition(int num) {
@@ -439,7 +445,9 @@ public class OperatorControlModule extends SubsystemBase {
     }
 
     public void interrupted() {
+        if(queuedValue!=null){
         nodeSuperStateValues[queuedValue.x][queuedValue.y] = NodeSuperState.QUEUED.value;
+        }
     }
 
     public void autoHover() {

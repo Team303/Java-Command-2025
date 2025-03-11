@@ -9,10 +9,12 @@ import static frc.robot.Robot.elevator;
 public class GoToPosition extends Command {
 
     int newLevel;
+    boolean state;
     
-    public GoToPosition(int levelNumber) {
+    public GoToPosition(int levelNumber, boolean state) {
         addRequirements(Robot.elevator);
         newLevel = levelNumber;
+        this.state = state;
     }
 
     @Override
@@ -40,6 +42,7 @@ public class GoToPosition extends Command {
     
     @Override
     public void execute() {
+        System.out.println(Robot.elevator.getRealPosition(Robot.elevator.rightElevatorMotor));
         if(newLevel == 1) {
             Robot.elevator.moveToSetpoint(0);
            elevator.position = 0;
@@ -64,7 +67,11 @@ public class GoToPosition extends Command {
 
     @Override
     public boolean isFinished() {
-        return  newLevel == 1;
+        if(state) {
+        return  newLevel == 1; //|| (double)Robot.elevator.getRealPosition(Robot.elevator.rightElevatorMotor) - (double)elevator.position > 0.05;
+        } else {
+            return  newLevel == 1 || (double)Robot.elevator.getRealPosition(Robot.elevator.rightElevatorMotor) - (double)elevator.position > 0.05;
+        }
     }
 
     @Override

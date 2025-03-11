@@ -16,7 +16,7 @@ public class Intake extends Command {
     }
 
     public void execute() {
-        algae.intakeMotor.set(1);
+        // algae.intakeMotor.set(1);
     }
 
     // public boolean isFinished() {
