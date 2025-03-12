@@ -15,7 +15,7 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import org.littletonrobotics.junction.Logger;
 
-// import frc.commands.endeffector.FixCoral;
+import frc.commands.endeffector.FixCoral;
 import frc.commands.endeffector.IntakeCoral;
 import frc.robot.Robot.CoralState;
 import frc.robot.RobotMap.EndEffector;
@@ -64,6 +64,7 @@ public class EndEffectorSubsystem extends SubsystemBase {
     public boolean firstSeeCoral()
     {
       return firstLC.getMeasurement().distance_mm < 100;
+      return firstLC.getMeasurement().distance_mm < 100;
     }
 
     public boolean secondSeeCoral() {
@@ -72,8 +73,8 @@ public class EndEffectorSubsystem extends SubsystemBase {
 
     @Override
     public void periodic() { 
-    // firstLCValue.setDouble(firstLC.getMeasurement().distance_mm);
-    // secondLCValue.setDouble(secondLC.getMeasurement().distance_mm);
+    firstLCValue.setDouble(firstLC.getMeasurement().distance_mm);
+    secondLCValue.setDouble(secondLC.getMeasurement().distance_mm);
     Logger.recordOutput("coralState",coralState.toString());
     if(coralState==CoralState.HOLDING && firstSeeCoral()){
       leftMotor.set(0.15);

@@ -44,7 +44,7 @@ import org.littletonrobotics.junction.wpilog.WPILOGWriter;
 import frc.commands.drive.DefaultDrive;
 import frc.commands.drive.DriveWait;
 import frc.commands.drive.TurnToAngle;
-// import frc.commands.endeffector.EjaculateCoral;
+import frc.commands.endeffector.EjaculateCoral;
 import frc.commands.endeffector.IntakeCoral;
 import frc.commands.endeffector.ShootCoral;
 import frc.modules.OperatorControlModule;
@@ -243,7 +243,7 @@ public class Robot extends LoggedRobot {
 		operatorController.back().onTrue(Commands.runOnce(()-> operatorControl.setPiece()));
 		operatorController.rightBumper().onTrue(Commands.runOnce(() -> operatorControl.toggleStrategy()));
 		operatorController.rightTrigger().whileTrue(Commands.runOnce(() -> operatorControl.wheelMode()).repeatedly());
-		// operatorController.a().toggleOnTrue(new frc.commands.algae.Intake());
+		operatorController.a().toggleOnTrue(new frc.commands.algae.Intake());
 
 
 
@@ -327,7 +327,22 @@ public class Robot extends LoggedRobot {
 			this.autonomousCommand = delay;
 		}
 
-		// Schedule the combined command group
+		// Schedule the combi
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		d command group
 		CommandScheduler.getInstance().schedule(this.autonomousCommand);
 	}
 

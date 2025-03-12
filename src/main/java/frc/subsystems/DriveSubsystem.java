@@ -437,34 +437,23 @@ public class DriveSubsystem extends SubsystemBase {
       return angleDeg + 360;
   }
 
-  public ChassisSpeeds ampAlign(ChassisSpeeds chassisSpeeds) {
+  // public ChassisSpeeds ampAlign(ChassisSpeeds chassisSpeeds) {
 
-    boolean isBlue = true;
+  //   boolean isBlue = true;
 
-    var alliance = DriverStation.getAlliance();
-    if (alliance.isPresent()) {
-      isBlue = alliance.get() == DriverStation.Alliance.Blue;
-    }
+  //   var alliance = DriverStation.getAlliance();
+  //   if (alliance.isPresent()) {
+  //     isBlue = alliance.get() == DriverStation.Alliance.Blue;
+  //   }
 
-    double angle = isBlue ? -90 : 90;
+  //   double angle = isBlue ? -90 : 90;
 
-    chassisSpeeds.omegaRadiansPerSecond -= speakerAlignPid.calculate(Robot.navX.getAngle(), angle);
+  //   chassisSpeeds.omegaRadiansPerSecond -= speakerAlignPid.calculate(Robot.navX.getAngle(), angle);
 
-    return chassisSpeeds;
-  }
+  //   return chassisSpeeds;
+  // }
 
-  public void setSpeakerLock() {
-    speakerLock = true;
-  }
 
-  public void setAmpLock() {
-    ampLock = true;
-  }
-
-  public void removeLock() {
-    ampLock = false;
-    speakerLock = false;
-  }
 
   public void drive(Translation2d translation, double rotation, boolean fieldOriented) {
 

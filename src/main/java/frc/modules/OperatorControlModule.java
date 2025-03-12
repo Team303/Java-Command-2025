@@ -243,9 +243,7 @@ public class OperatorControlModule extends SubsystemBase {
             return;
         }
         nodeSuperStateValues[queuedValue.x][queuedValue.y] = NodeSuperState.NONE.value;
-        if(queuedValue.y!=0) {
-            nodeStateValues[queuedValue.x][queuedValue.y] = NodeState.CORAL.value;
-        }
+        nodeStateValues[queuedValue.x][queuedValue.y] = NodeState.CORAL.value;
         queuedValue = null;
         autoHover();
     }
@@ -445,9 +443,7 @@ public class OperatorControlModule extends SubsystemBase {
     }
 
     public void interrupted() {
-        if(queuedValue!=null){
         nodeSuperStateValues[queuedValue.x][queuedValue.y] = NodeSuperState.QUEUED.value;
-        }
     }
 
     public void autoHover() {

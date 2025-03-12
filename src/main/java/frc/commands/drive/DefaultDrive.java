@@ -1,7 +1,6 @@
 package frc.commands.drive;
 
 import edu.wpi.first.math.MathUtil;
-import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -13,13 +12,11 @@ public class DefaultDrive extends Command {
     Translation2d translation;
     double percentPower;
 
-
     boolean isAlliance = true;
 
     public DefaultDrive(boolean fieldOriented) {
         addRequirements(Robot.swerve);
         this.fieldOriented = fieldOriented;
-
     }
 
     @Override

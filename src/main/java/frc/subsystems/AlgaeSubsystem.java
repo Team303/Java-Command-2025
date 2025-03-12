@@ -23,51 +23,50 @@ import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class AlgaeSubsystem extends SubsystemBase{
-//     public final SparkMax intakeMotor;
-//     public final SparkMax pivotMotor;
-//     public final AbsoluteEncoder enc;
-//    public final PIDController pidController;
-//     public final ArmFeedforward pivotFeedforward;
+    public final SparkMax intakeMotor;
+    public final SparkMax pivotMotor;
+    public final AbsoluteEncoder enc;
+   public final PIDController pidController;
+    public final ArmFeedforward pivotFeedforward;
 
-//     public AlgaeSubsystem() {
-//         intakeMotor = new SparkMax(Algae.INTAKE_MOTOR_ID, MotorType.kBrushless);
-//         pivotMotor = new SparkMax(Algae.PIVOT_MOTOR_ID, MotorType.kBrushless);
-//         enc = intakeMotor.getAbsoluteEncoder();
-//         pivotFeedforward = new ArmFeedforward(RobotMap.Algae.PIVOT_FEED_FORWARD_KS,
-// 				RobotMap.Algae.PIVOT_FEED_FORWARD_KG,
-// 				RobotMap.Algae.PIVOT_FEED_FORWARD_KV,
-// 				RobotMap.Algae.PIVOT_FEED_FORWARD_KA);
+    public AlgaeSubsystem() {
+        intakeMotor = new SparkMax(Algae.INTAKE_MOTOR_ID, MotorType.kBrushless);
+        pivotMotor = new SparkMax(Algae.PIVOT_MOTOR_ID, MotorType.kBrushless);
+        enc = intakeMotor.getAbsoluteEncoder();
+        pivotFeedforward = new ArmFeedforward(RobotMap.Algae.PIVOT_FEED_FORWARD_KS,
+				RobotMap.Algae.PIVOT_FEED_FORWARD_KG,
+				RobotMap.Algae.PIVOT_FEED_FORWARD_KV,
+				RobotMap.Algae.PIVOT_FEED_FORWARD_KA);
         
 
-//         pidController = new PIDController(5, 0, 0);
+        pidController = new PIDController(5, 0, 0);
 
 
 
-//         SparkMaxConfig x = new SparkMaxConfig();
-//         x.idleMode(SparkBaseConfig.IdleMode.kBrake);
-//         pivotMotor.configure(x, SparkBase.ResetMode.kResetSafeParameters, SparkBase.PersistMode.kPersistParameters);
+        SparkMaxConfig x = new SparkMaxConfig();
+        x.idleMode(SparkBaseConfig.IdleMode.kBrake);
+        pivotMotor.configure(x, SparkBase.ResetMode.kResetSafeParameters, SparkBase.PersistMode.kPersistParameters);
 
         // double pivotOutput = pidController.calculate()
 
-//     }
-
-//     public double normalizeAngle(double AngleRad)
-//     {
-//         AngleRad %= Math.PI*2;
-
-//         if(AngleRad < 0)
-//         {
-//             AngleRad += Math.PI*2;
-//         }
-
-//         return AngleRad;
-//     }
-
-    public double getAbsoluteAngle()
-    {
-        // return normalizeAngle(.getAbsolutePosition()*2*Math.PI - Math.toRadians(47+308));
-        return 0.0;
     }
+
+    public double normalizeAngle(double AngleRad)
+    {
+        AngleRad %= Math.PI*2;
+
+        if(AngleRad < 0)
+        {
+            AngleRad += Math.PI*2;
+        }
+
+        return AngleRad;
+    }
+
+//     // public double getAbsoluteAngle()
+//     // {
+//     //     // return normalizeAngle(.getAbsolutePosition()*2*Math.PI - Math.toRadians(47+308));
+//     // }
     
 
 }
