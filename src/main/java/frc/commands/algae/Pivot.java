@@ -13,12 +13,12 @@ public Pivot() {
 }
 
 public void initialize() {
-    theta0 = algae.pivotMotor.getAbsoluteEncoder().getPosition();
+    // theta0 = algae.pivotMotor.getAbsoluteEncoder().getPosition();
 }
 
 public void execute(double theta_Final) {
-    diff_theta = theta_Final-(algae.pivotMotor.getAbsoluteEncoder().getPosition());
-    algae.pivotMotor.set(RobotMap.Algae.PIVOT_MOTOR_Kp*diff_theta);
+    // diff_theta = theta_Final-(algae.pivotMotor.getAbsoluteEncoder().getPosition());
+    // algae.pivotMotor.set(RobotMap.Algae.PIVOT_MOTOR_Kp*diff_theta);
 
 }
 

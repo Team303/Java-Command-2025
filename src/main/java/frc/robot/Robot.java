@@ -158,7 +158,7 @@ public class Robot extends LoggedRobot {
 		endEffector = new EndEffectorSubsystem();
 		elevator = new ElevatorSubsystem();
 		operatorControl = new OperatorControlModule();
-		algae = null;
+		algae = new AlgaeSubsystem();
 		
 		getQueuedPositionRequirements = new HashSet<Subsystem>();
 		getQueuedPositionRequirements.add(swerve);
@@ -327,22 +327,7 @@ public class Robot extends LoggedRobot {
 			this.autonomousCommand = delay;
 		}
 
-		// Schedule the combi
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		d command group
+		// Schedule the combd command group
 		CommandScheduler.getInstance().schedule(this.autonomousCommand);
 	}
 
