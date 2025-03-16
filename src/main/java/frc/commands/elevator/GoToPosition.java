@@ -15,6 +15,7 @@ public class GoToPosition extends Command {
         addRequirements(Robot.elevator);
         newLevel = levelNumber;
         this.state = state;
+        elevator.newLevel=newLevel;
     }
 
     @Override
@@ -42,25 +43,30 @@ public class GoToPosition extends Command {
     
     @Override
     public void execute() {
-        System.out.println(Robot.elevator.getRealPosition(Robot.elevator.rightElevatorMotor));
+        // System.out.println(Robot.elevator.getRealPosition(Robot.elevator.rightElevatorMotor));
         if(newLevel == 1) {
             Robot.elevator.moveToSetpoint(0);
            elevator.position = 0;
             elevator.level = 1;
         } else if (newLevel == 2) {
-            Robot.elevator.moveToSetpoint(3.8);
-           elevator.position = 3.8;
+            Robot.elevator.moveToSetpoint(4.5);
+           elevator.position = 4.5;
             elevator.level = 2;
         }
         else if (newLevel == 3) {
-            Robot.elevator.moveToSetpoint(10.5);
-           elevator.position = 10.5;
+            Robot.elevator.moveToSetpoint(20.3);
+           elevator.position = 20.3;
             elevator.level = 3;
         }
         else if (newLevel == 4) {
-            Robot.elevator.moveToSetpoint(23);
-           elevator.position = 23;
+            Robot.elevator.moveToSetpoint(47.3);
+           elevator.position = 47.3;
             elevator.level = 4;
+        }
+        else if (newLevel == 5) {
+            Robot.elevator.moveToSetpoint(14.77);
+            elevator.position = 14.77;
+            elevator.level = 5;
         }
        Robot.elevator.update();
     }
@@ -70,13 +76,14 @@ public class GoToPosition extends Command {
         if(state) {
         return  newLevel == 1; //|| (double)Robot.elevator.getRealPosition(Robot.elevator.rightElevatorMotor) - (double)elevator.position > 0.05;
         } else {
-            return  newLevel == 1 || (double)Robot.elevator.getRealPosition(Robot.elevator.rightElevatorMotor) - (double)elevator.position > 0.05;
+            return  newLevel == 1 || Math.abs((double)Robot.elevator.getRealPosition(Robot.elevator.rightElevatorMotor) - (double)elevator.position) < 0.05;
         }
     }
 
     @Override
     public void end(boolean interrupted) {
         System.out.println("end");
+        elevator.level = 1;
         elevator.leftElevatorMotor.set(0);
         elevator.rightElevatorMotor.set(0);
     }

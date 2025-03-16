@@ -50,7 +50,7 @@ public class EndEffectorSubsystem extends SubsystemBase {
 
     try {
       secondLC.setRangingMode(LaserCan.RangingMode.SHORT);
-      secondLC.setRegionOfInterest(new LaserCan.RegionOfInterest(13, 8, 1, 1));
+      secondLC.setRegionOfInterest(new LaserCan.RegionOfInterest(12, 8, 4, 4));
       secondLC.setTimingBudget(LaserCan.TimingBudget.TIMING_BUDGET_100MS);
     } catch (ConfigurationFailedException e) {
       System.out.println("Configuration failed! " + e);
@@ -67,7 +67,7 @@ public class EndEffectorSubsystem extends SubsystemBase {
   }
 
   public boolean firstSeeCoral() {
-    return firstLC.getMeasurement().distance_mm < 100;
+    return firstLC.getMeasurement().distance_mm < 250;
   }
 
   public boolean secondSeeCoral() {
@@ -88,7 +88,7 @@ public class EndEffectorSubsystem extends SubsystemBase {
       }
       leftMotor.set(-0.15);
       rightMotor.set(0.15);
-      if (!timer.hasElapsed(0.2)) {
+      if (!timer.hasElapsed(0.4)) {
         stateCheck=3;
       } else {
         retracted = true;
@@ -111,6 +111,8 @@ public class EndEffectorSubsystem extends SubsystemBase {
       indexed = false;
     }
     Logger.recordOutput("stateCheck", stateCheck);
+    Logger.recordOutput("coralState", coralState.toString());
+
     /*
      * operatorController.a().toggleOnTrue(new GoToPosition(4));
      * operatorController.b().toggleOnTrue(new GoToPosition(3));

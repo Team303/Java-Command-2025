@@ -36,6 +36,19 @@
               "_glyph": 148,
               "_showGlyph": false
             }
+          },
+          "2,0": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "Alerts",
+              "_source0": "network_table:///SmartDashboard/PathPlanner",
+              "_title": "PathPlanner",
+              "_glyph": 148,
+              "_showGlyph": false
+            }
           }
         }
       }
@@ -64,7 +77,7 @@
         "vgap": 16.0,
         "titleType": 0,
         "tiles": {
-          "2,5": {
+          "7,3": {
             "size": [
               1,
               1
@@ -77,7 +90,7 @@
               "_showGlyph": false
             }
           },
-          "3,5": {
+          "8,3": {
             "size": [
               1,
               1
@@ -473,9 +486,9 @@
     }
   ],
   "windowGeometry": {
-    "x": -8.0,
-    "y": -8.0,
-    "width": 1936.0,
-    "height": 1048.0
+    "x": -52.66666793823242,
+    "y": 82.0,
+    "width": 1294.6666259765625,
+    "height": 814.6666870117188
   }
 }

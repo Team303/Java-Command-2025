@@ -17,8 +17,8 @@ public class IntakeCoral extends Command {
     }
 
     public void execute() {
-        endEffector.leftMotor.set(0.45);
-        endEffector.rightMotor.set(-0.45);
+        endEffector.leftMotor.set(0.4);
+        endEffector.rightMotor.set(-0.4);
         // canSee=endEffector.firstSeeCoral();
         // System.out.println("Yoo");
         
@@ -29,7 +29,7 @@ public class IntakeCoral extends Command {
    }
     
     public void end(boolean interrupted) {
-        coralState = CoralState.HOLDING;
+        coralState =    CoralState.HOLDING;
         endEffector.leftMotor.set(0);
         endEffector.rightMotor.set(0);
     }

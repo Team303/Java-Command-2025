@@ -228,6 +228,7 @@ public class OperatorControlModule extends SubsystemBase {
     }
 
     public void lockIn() {
+        System.out.println("lockin");
         if (queuedValue == null) {
             System.out.println(
                     "\nNEED TO SELECT A NODE FIRST\nNEED TO SELECT A NODE FIRST\nNEED TO SELECT A NODE FIRST\nNEED TO SELECT A NODE FIRST\nNEED TO SELECT A NODE FIRST\nNEED TO SELECT A NODE FIRST\nNEED TO SELECT A NODE FIRST\nNEED TO SELECT A NODE FIRST\nNEED TO SELECT A NODE FIRST\nNEED TO SELECT A NODE FIRST\nNEED TO SELECT A NODE FIRST");
@@ -322,7 +323,7 @@ public class OperatorControlModule extends SubsystemBase {
     }
 
     public int getQueuedLevel() {
-        return queuedValue.y;
+        return queuedValue.y+1;
     }
 
     public FieldPosition getQueuedPosition(int num) {
@@ -531,6 +532,9 @@ public class OperatorControlModule extends SubsystemBase {
         if (hoverValue == null) {
             autoHover();
         }
+        // if(queuedValue!=null) {
+        //     System.out.println(queuedValue.x+" "+queuedValue.y);
+        // }
         if ((DriverStation.isFMSAttached()
                 || (!DriverStation.isAutonomous() && !DriverStation.isTeleop() && !DriverStation.isTest()))
                 && DriverStation.getMatchTime() < 30) {

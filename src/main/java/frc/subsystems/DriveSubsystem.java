@@ -67,6 +67,7 @@ import com.pathplanner.lib.config.ModuleConfig;
 import com.pathplanner.lib.config.PIDConstants;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.modules.PhotonvisionModule.CameraName;
+import frc.commands.elevator.GoToPosition;
 import frc.modules.SwerveModule;
 import frc.robot.Robot;
 import frc.robot.RobotMap;
@@ -87,7 +88,8 @@ public class DriveSubsystem extends SubsystemBase {
   public static final double kMaxSpeed = 5.2 * 4; // 5.2 meters per second
   public static final double kMaxAngularSpeed = kMaxSpeed / (Math.hypot(0.381, 0.381)); // radians per second
 
-  private double lastOmega;
+  private double lastOmega=0;
+  public double lastRightX = 0;
   private final Timer itsover = new Timer();
 
   private final Translation2d frontLeftLocation = new Translation2d(Units.inchesToMeters(24.5 / 2.0),
@@ -104,7 +106,7 @@ public class DriveSubsystem extends SubsystemBase {
   public final SwerveModule backLeft;
   public final SwerveModule backRight;
   // private final SwerveDriveOdometry odometry;
-  private final PIDController driftCorrectionPid = new PIDController(0.12, 0, 0);
+  private final PIDController driftCorrectionPid = new PIDController(0.18, 0, 0);
   private final PIDController speakerAlignPid = new PIDController(0.5, 0, 0);
   // private Pose2d pose = new Pose2d(0.0, 0.0, new Rotation2d());
 
@@ -357,7 +359,7 @@ public class DriveSubsystem extends SubsystemBase {
         this::resetOdometry, // Method to reset odometry (will be called if your auto has a starting pose)
         this::getRobotRelativeSpeeds, // ChassisSpeeds supplier. MUST BE ROBOT RELATIVE
         this::robotRelativeDrive, // Method that will drive the robot given ROBOT RELATIVE ChassisSpeeds
-        new PPHolonomicDriveController(new PIDConstants(5, 0.0, 0.5), new PIDConstants(8, 0, 0)), new RobotConfig(
+        new PPHolonomicDriveController(new PIDConstants(8, 0.0, 0.5), new PIDConstants(8, 0, 0)), new RobotConfig(
             Units.lbsToKilograms(RobotMap.Swerve.ROBOT_MASS),
             RobotMap.Swerve.ROBOT_MOI,
             new ModuleConfig(Units.inchesToMeters(2), kMaxSpeed * 3, kMaxAngularSpeed,
@@ -403,16 +405,22 @@ public class DriveSubsystem extends SubsystemBase {
    * @return the corrected chassisspeeds
    */
   private ChassisSpeeds translationalDriftCorrection(ChassisSpeeds chassisSpeeds) {
+    boolean resetTime = false;
+
     if (!Robot.navX.isConnected())
       return chassisSpeeds;
     double translationalVelocity = Math.hypot(chassisSpeeds.vxMetersPerSecond, chassisSpeeds.vyMetersPerSecond);
     Logger.recordOutput("translational velocity", translationalVelocity);
     Logger.recordOutput("turn rate", Robot.navX.getRate());
     Logger.recordOutput("desiredHeading", m_desiredHeading);
-    if (Math.abs(chassisSpeeds.omegaRadiansPerSecond) > 0.5) {
-      m_desiredHeading = Robot.navX.getAngle();
-    } else if ((lastOmega > 0.5 && chassisSpeeds.omegaRadiansPerSecond <= 0.5) || (itsover.get()>0 && itsover.get()<0.2)) {
-      m_desiredHeading = Robot.navX.getAngle();
+    Logger.recordOutput("timing", itsover.get());
+    m_desiredHeading%=360;
+    //if (Math.abs(chassisSpeeds.omegaRadiansPerSecond) > 0.5) {
+   //   m_desiredHeading = Robot.navX.getAngle();
+   // } else 
+   if ((Math.abs(chassisSpeeds.omegaRadiansPerSecond) >= 0.5) || (itsover.get()>0.0 && itsover.get()<2.0)) {
+      m_desiredHeading = Robot.navX.getAngle() % 360;
+      resetTime = true;
     } else if (Math.abs(translationalVelocity) > 1) {
 
       double calc = driftCorrectionPid.calculate(Robot.navX.getAngle() % 360,
@@ -422,13 +430,16 @@ public class DriveSubsystem extends SubsystemBase {
         chassisSpeeds.omegaRadiansPerSecond += calc;
       }
     }
-    if((lastOmega > 0.5 && chassisSpeeds.omegaRadiansPerSecond <= 0.5)) {
+    if(( Math.abs(chassisSpeeds.omegaRadiansPerSecond) <= 0.5) &&  resetTime || (Math.abs(lastRightX) >= 0.2 && Math.abs(Robot.driverController.getRightX()) < 0.2)) { //Math.abs(lastOmega) > 0.5 &&
       itsover.start();
+      resetTime = false;
     }
-    if(itsover.hasElapsed(0.2)) {
-      itsover.reset();
-    }
+    if(itsover.hasElapsed(2)) {
+       itsover.reset();
+       itsover.stop();
+     }
     lastOmega = chassisSpeeds.omegaRadiansPerSecond;
+    lastRightX = Robot.driverController.getRightX();
     return chassisSpeeds;
   }
 
@@ -477,7 +488,7 @@ public class DriveSubsystem extends SubsystemBase {
   public void drive(Translation2d translation, double rotation, boolean fieldOriented) {
     ChassisSpeeds chassisSpeeds;
 
-    if (elevator.level > 2) {
+    if (elevator.level == 3 || elevator.level == 4) {
       chassisSpeeds = fieldOriented
           ? ChassisSpeeds.fromFieldRelativeSpeeds(accelerationXFilter.calculate(translation.getX()),
               accelerationYFilter.calculate(translation.getY()), accelerationRotationFilter.calculate(rotation),
@@ -503,12 +514,12 @@ public class DriveSubsystem extends SubsystemBase {
   }
 
   public void robotRelativeDrive(ChassisSpeeds chassisSpeeds, DriveFeedforwards driveFeedForwards) {
-    if (elevator.level > 2) {
+    if (elevator.level == 3 || elevator.level == 4) {
       chassisSpeeds.vxMetersPerSecond = robrelaccelerationXFilter.calculate(chassisSpeeds.vxMetersPerSecond);
       chassisSpeeds.vyMetersPerSecond = robrelaccelerationYFilter.calculate(chassisSpeeds.vyMetersPerSecond);
       chassisSpeeds.omegaRadiansPerSecond = robrelaccelerationRotationFilter
           .calculate(chassisSpeeds.omegaRadiansPerSecond);
-    }
+    } 
     drive(kinematics.toSwerveModuleStates(chassisSpeeds));
 
   }
@@ -563,6 +574,7 @@ public class DriveSubsystem extends SubsystemBase {
   }
 
   public Command pathfindthenFollowPath(FieldPosition position) {
+    System.out.println("pathfinding");
     PathConstraints constraints = new PathConstraints(3.0, 3.0, 2 * Math.PI, 4 * Math.PI); // The constraints for this
     if (position.name().equals("CURRENT_POSE")) {
       logNoNodeSelected.set(true);
@@ -572,6 +584,7 @@ public class DriveSubsystem extends SubsystemBase {
       return AutoBuilder.pathfindThenFollowPath(pathFromFile(position.name()), constraints);
     }
   }
+
 
   // /** Updates the field relative position of the robot. */
   public void updateOdometry() {
@@ -759,9 +772,9 @@ public class DriveSubsystem extends SubsystemBase {
     m_desiredHeading = 0;
     poseEstimator.resetPosition(Robot.navX.getRotation2d(), getModulePositions(),
         new Pose2d(
-            new Translation2d(calculateFieldPosition(FieldPosition.RED_REEF_C).getX(),
-                calculateFieldPosition(FieldPosition.RED_REEF_C).getY()),
-            Rotation2d.fromDegrees(isBlue ? 0 : 60)));
+            new Translation2d(calculateFieldPosition(FieldPosition.RED_REEF_A).getX(),
+                calculateFieldPosition(FieldPosition.RED_REEF_A).getY()),
+            Rotation2d.fromDegrees(isBlue ? 0 : 0)));
 
   }
 
